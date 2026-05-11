@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('friend_requests', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('sender_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('receiver_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('sender_id')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->foreignId('receiver_id')->nullable()->constrained('users')->cascadeOnDelete();
             
             $table->enum('status' , ['pending' , 'accepted' , 'rejected'])->default('pending') ;
             $table->timestamps();

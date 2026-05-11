@@ -28,14 +28,14 @@
                     <div class="flex justify-between items-center md:gap-5 lg:flex-row lg:items-center lg:justify-between">
 
                         <div class="flex items-start gap-4">
-                            <img src="{{ asset($f->sender->image?->path ? 'storage/' . $f->sender->image->path : 'images/blank-profile.webp') }}"
-                                alt="{{ $f->sender->name }}"
+                            <img src="{{ asset($f->sender?->image?->path ? 'storage/' . $f->sender->image->path : 'images/blank-profile.webp') }}"
+                                alt="{{ $f->sender?->name ?? 'undefind' }}"
                                 class="h-10 w-10 md:w-16 md:h-16 rounded-full border border-white/20 bg-[#0d1117] object-cover">
 
                             <div>
-                                <a href="{{ route('users.show', $f->sender->id) }}">
-                                    <p class="md:text-lg text-md font-semibold text-white">{{ $f->sender->name }}</p>
-                                    <p class="mt-1 md:text-sm text-xs  text-[#9198a1]">{{ $f->sender->email }}</p>
+                                <a href="{{$f->sender?->id && route('users.show', $f->sender?->id) }}">
+                                    <p class="md:text-lg text-md font-semibold text-white">{{ $f->sender?->name ?? 'undefined' }}</p>
+                                    <p class="mt-1 md:text-sm text-xs  text-[#9198a1]">{{ $f->sender?->email ?? 'undefined'  }}</p>
                                 </a>
                             </div>
                         </div>
