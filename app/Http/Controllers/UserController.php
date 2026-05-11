@@ -262,7 +262,9 @@ class UserController extends Controller
             return redirect()->back()->with('error', 'user not found');
         }
 
+        Image::deleteOne($user) ;
         $user->delete();
-        return redirect()->route('users.users.index')->with('success', 'User deleted successfully.');
+        // return redirect()->route('users.users.index')->with('success', 'User deleted successfully.');
+        return redirect()->back()->with('success', 'User deleted successfully.');
     }
 }

@@ -52,4 +52,17 @@ class Image extends Model
 
         return $storedImages;
     }
+
+    static function deleteMultiple($model)
+    {
+        $ids = $model->images()->pluck('id') ;
+        foreach($ids as $id){
+            Storage::disk('public')->delete(Image::find($id)->path) ;
+        }
+    }
+
+    static function deleteOne($model)
+    {
+        if($model->image->path) Storage::disk('public')->delete($model->image->path) ;
+    }
 }

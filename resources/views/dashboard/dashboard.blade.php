@@ -29,12 +29,12 @@
             <div class="hidden md:block landscape:block">
                 <div class="overflow-x-auto [&::-webkit-scrollbar]:h-[1px] [&::-webkit-scrollbar-thumb]:bg-blue-500">
                     <div class="flex justify-center items-center min-w-max">
-                        <table class="border border-solid border-white/30 rounded-4xl">
-                            <thead>
-                                <tr>
-                                    <td class="px-3 border-b border-solid border-white/30 min-w-[25px] bg-[#151b23] sticky left-0 block">habit</td>
+                        <table class="">
+                            <thead class="">
+                                <tr class="border border-[#86878b]">
+                                    <td class="px-3 min-w-[25px] bg-[#151b23] sticky left-[0px] block m-0 border-x">habits</td>
                                     @for ($i = 1; $i <= now()->daysInMonth; $i++)
-                                        <td class="border border-solid border-white/30 min-w-[25px] text-center bg-[#151b23]">
+                                        <td class="border border-solid border-[#86878b] min-w-[25px] text-center bg-[#151b23]">
                                             {{ $i }}</td>
                                     @endfor
                                 </tr>
@@ -47,8 +47,9 @@
                                         $lastLog = $logs->last();
                                         $current_log_index = 0;
                                     @endphp
-                                    <tr>
-                                        <td class="px-3 border border-solid border-white/30 min-w-[25px] bg-[#151b23] sticky left-0 block"> <a href="{{ route('habits.show' , $h->id) }}">{{ $h->title }}</a></td>
+
+                                    <tr class="border border-[#86878b] bg-[#0d1117] hover:bg-[#23262d] hover:border-blue-400">
+                                        <td class="px-3 min-w-[25px] bg-inherit sticky left-[0px] block m-0 border-x"> <a href="{{ route('habits.show' , $h->id) }}">{{ $h->title }}</a></td>
 
                                         @for ($i = 1; $i <= now()->daysInMonth; $i++)
                                             @php
@@ -63,10 +64,10 @@
                                                     @php
                                                         $current_log_index++;
                                                     @endphp
-                                                    <td class="border border-solid border-white/50 min-w-[25px] text-center bg-green-800">
+                                                    <td class="border-x border-solid border-[#86878b] min-w-[25px] text-center bg-green-800">
                                                         <img src="{{ asset('svg/ok.svg') }}" class="w-[15px] m-auto" alt=""></td>
                                                 @else
-                                                    <td class="border border-solid border-white/50 min-w-[25px] text-center bg-red-800"><img
+                                                    <td class="border-x border-solid border-[#86878b] min-w-[25px] text-center bg-red-800"><img
                                                             src="{{ asset('svg/x.svg') }}" class="w-[15px] m-auto" alt=""></td>
                                                 @endif
 
@@ -74,7 +75,7 @@
 
 
                                                 @if ($lastLog?->completed_date->day != $i)
-                                                    <td class="border border-solid border-white/50 min-w-[25px] text-center cursor-pointer">
+                                                    <td class="border-x border-solid border-[#86878b] min-w-[25px] text-center cursor-pointer">
                                                         <form action="{{ route('logs.store') }}" method="POST">
                                                             @csrf
                                                             <input type="hidden" name="task_id" value="{{ $h->id }}">
@@ -86,7 +87,7 @@
                                                     </td>
                                                 @else
                                                     <td
-                                                        class="border border-solid border-white/50 min-w-[25px] text-center bg-green-800 cursor-pointer">
+                                                        class="border-x border-solid border-[#86878b] min-w-[25px] text-center bg-green-800 cursor-pointer">
                                                         <form action="{{ route('logs.destroy', $lastLog->id) }}" method="POST">
                                                             @csrf
                                                             @method('DELETE')
@@ -99,7 +100,7 @@
                                                     </td>
                                                 @endif
                                             @else
-                                                <td class="border border-solid border-white/50 min-w-[25px] text-center"></td>
+                                                <td class="border-x border-solid border-[#86878b] min-w-[25px] text-center"></td>
                                             @endif
                                         @endfor
                                     </tr>

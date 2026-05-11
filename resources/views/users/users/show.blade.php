@@ -136,14 +136,14 @@
                     {{-- update button --}}
                     @can('update', $user)
                         <a href="{{ route('users.edit', $user->id) }}"
-                            class="rounded-lg border border-white/20 bg-[#0d1117] px-5 py-2 text-sm font-medium text-white transition hover:border-white/50">
+                            class="rounded-lg border border-white/20 bg-[#0d1117] px-5 py-2 text-sm font-medium text-white transition hover:border-white/50 cursor-pointer">
                             update
                         </a>
 
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
                             <button
-                                class="rounded-lg border border-red-400/30 bg-red-500/10 px-5 py-2 text-sm font-medium text-red-200 transition hover:bg-red-500/20">
+                                class="rounded-lg border border-red-400/30 bg-red-500/10 px-5 py-2 text-sm font-medium text-red-200 transition hover:bg-red-500/20 cursor-pointer">
                                 logout
                             </button>
                         </form>
@@ -156,7 +156,7 @@
                                 <form action="{{ route('admin.users.ban', $user) }}" method="POST">
                                     @csrf
                                     <button
-                                        class="rounded-lg border border-red-400/30 bg-red-500/10 px-5 py-2 text-sm font-medium text-red-200 transition hover:bg-red-500/20">
+                                        class="rounded-lg border border-red-400/30 bg-red-500/10 px-5 py-2 text-sm font-medium text-red-200 transition hover:bg-red-500/20 cursor-pointer">
                                         {{ $user->is_banned || $user->is_banned_by_moderator ? 'unban' : 'ban' }}
                                     </button>
                                 </form>
@@ -164,7 +164,7 @@
                                 <form action="{{ route('moderator.users.ban', $user) }}" method="POST">
                                     @csrf
                                     <button
-                                        class="rounded-lg border border-red-400/30 bg-red-500/10 px-5 py-2 text-sm font-medium text-red-200 transition hover:bg-red-500/20">
+                                        class="rounded-lg border border-red-400/30 bg-red-500/10 px-5 py-2 text-sm font-medium text-red-200 transition hover:bg-red-500/20 cursor-pointer">
                                         {{ $user->is_banned_by_moderator ? 'unban' : 'temp ban' }}
                                     </button>
                                 </form>
@@ -185,7 +185,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button
-                                        class="rounded-lg border border-white/20 bg-[#0d1117] px-5 py-2 text-sm font-medium text-white transition hover:border-white/50">
+                                        class="rounded-lg border border-white/20 bg-[#0d1117] px-5 py-2 text-sm font-medium text-white transition hover:border-white/50 cursor-pointer">
                                         cansel
                                     </button>
                                 </form>
@@ -196,14 +196,14 @@
                                     <form action="{{ route('requests.reject', $pendingRequest->id) }}" method="POST">
                                         @csrf
                                         <button
-                                            class="rounded-lg border border-red-400/30 bg-red-500/10 px-5 py-2 text-sm font-medium text-red-200 transition hover:bg-red-500/20">
+                                            class="rounded-lg border border-red-400/30 bg-red-500/10 px-5 py-2 text-sm font-medium text-red-200 transition hover:bg-red-500/20 cursor-pointer">
                                             reject
                                         </button>
                                     </form>
                                     <form action="{{ route('requests.accept', $pendingRequest->id) }}" method="POST">
                                         @csrf
                                         <button
-                                            class="rounded-lg border border-white/20 bg-[#0d1117] px-5 py-2 text-sm font-medium text-white transition hover:border-white/50">
+                                            class="rounded-lg border border-white/20 bg-[#0d1117] px-5 py-2 text-sm font-medium text-white transition hover:border-white/50 cursor-pointer">
                                             accept
                                         </button>
                                     </form>
@@ -219,12 +219,23 @@
                                 @csrf
                                 <input type="hidden" name="receiver_id" value="{{ $user->id }}">
                                 <button
-                                    class="rounded-lg border border-white/20 bg-[#0d1117] px-5 py-2 text-sm font-medium text-white transition hover:border-white/50">
+                                    class="rounded-lg border border-white/20 bg-[#0d1117] px-5 py-2 text-sm font-medium text-white transition hover:border-white/50 cursor-pointer">
                                     add friend
                                 </button>
                             </form>
                         @endif
                     @endif
+
+                    {{-- @can('delete' , $user)
+                            <form action="{{ route('users.destroy' , $user->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button
+                                    class="rounded-lg border border-red-400/30 bg-red-500/10 px-5 py-2 text-sm font-medium text-red-200 transition hover:bg-red-500/20 cursor-pointer">
+                                    delete my acccount
+                                </button>
+                            </form>
+                    @endcan --}}
                 </div>
             </div>
         </div>

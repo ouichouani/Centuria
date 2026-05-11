@@ -33,10 +33,14 @@ class PostPolicy
 
     public function delete(User $user, Post $post): bool
     {
-        // if($post->user_id === $user->id || $user->role === 'Admin' || $user->role === 'Moderator' ) {
-        if($post->user_id === $user->id || $user->role === 'Admin' ) {
+        if($post->user_id === $user->id) {
             return true;
         }
+
+        if($user->role === 'Admin' && $post->user->role !== 'Admin') {
+            return true;
+        }
+
         return false;
     }
 

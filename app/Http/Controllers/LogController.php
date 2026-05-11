@@ -148,7 +148,7 @@ class LogController extends Controller
                 ->count();
             }
 
-            return ($difficulty * $priority * $totalLogs) - ($difficulty * $priority * $expectedDays * 0.75) + $habit->streaks ;
+            return ($difficulty * $priority * $totalLogs) - ($difficulty * $priority * $expectedDays * 0.5) + $habit->streaks ;
         })->avg();
 
 
