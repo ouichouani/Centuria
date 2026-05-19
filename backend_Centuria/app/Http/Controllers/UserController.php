@@ -17,10 +17,76 @@ class UserController extends Controller
 {
     // Authentication methods
 
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+
+        if (!$token = Auth::attempt($credentials)) return response()->json(['error' => 'Unauthorized'], 401);
+        return $this->respondWithToken($token);
+
+        // web version ... 
+
+        // if (Auth::attempt($credentials)) {
+            // return redirect()->route('login')->with('error', 'The provided credentials do not match our records');
+        // }
+
+        // $request->session()->regenerate();
+        // if (Auth::user()->is_admin) return redirect()->route('admin.dashboard')->with('success', 'You are now logged in.');
+        // if (Auth::user()->is_moderator) return redirect()->route('moderator.dashboard')->with('success', 'You are now logged in.');
+        // return redirect()->route('dashboard')->with('success', 'You are now logged in.');
+    }
+
+    public function register(StoreUserRequest $request)
+    {
+        $data = $request->validated();
+        $data['password'] = Hash::make($data['password']);
+        $user = User::create($data);
+        $token = Auth::login($user);
+        return $this->respondWithToken($token) ;
+        
+        // web version ... 
+        // if (isset($image) && $image instanceof \Illuminate\Http\UploadedFile) {
+        //     Image::store($user, 'users', $data['image']);
+        // }
+        // return redirect()->route('dashboard')->with('success', 'Account created successfully.');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        return response()->json(['message' => 'Logged out']);
+
+        // web version ... 
+        // $request->session()->invalidate();
+        // $request->session()->regenerateToken();
+        // return redirect()->route('login');
+
+    }
+
+    protected function respondWithToken($token)
+    {
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60
+        ]);
+    }
+        
+    public function refresh()
+    {
+        return $this->respondWithToken(Auth::refresh());
+    }
+
+    // CRUD methods
+
     public function dashboard()
     {
 
         $user = Auth::user();
+
         if ($user->is_banned) {
             Auth::logout();
             return redirect()->route('login')->with('error', 'Your account has been banned. Please contact support for more information.');
@@ -38,57 +104,12 @@ class UserController extends Controller
         return view('users.users.login');
     }
 
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
-
-        if (!Auth::attempt($credentials)) {
-            return redirect()->route('login')->with('error', 'The provided credentials do not match our records');
-        }
-
-        $request->session()->regenerate();
-        if (Auth::user()->is_admin) return redirect()->route('admin.dashboard')->with('success', 'You are now logged in.');
-        if (Auth::user()->is_moderator) return redirect()->route('moderator.dashboard')->with('success', 'You are now logged in.');
-
-        return redirect()->route('dashboard')->with('success', 'You are now logged in.');
-    }
-
-    public function register(StoreUserRequest $request)
-    {
-        $data = $request->validated();
-        $data['password'] = Hash::make($data['password']);
-
-        $user = User::create($data);
-
-        if (isset($image) && $image instanceof \Illuminate\Http\UploadedFile) {
-            Image::store($user, 'users', $data['image']);
-        }
-        Auth::login($user);
-
-        return redirect()->route('dashboard')->with('success', 'Account created successfully.');
-    }
-
-    public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('login');
-    }
-
-    // CRUD methods
-
     public function search($query, $like)
     {
         return $query->where(function ($q) use ($like) {
             $q->where('name', "like", "%$like%")->orWhere('email', 'like', "%$like%");
         });
     }
-
 
     public function index()
     {
@@ -183,7 +204,15 @@ class UserController extends Controller
         $receivedRequests = $data['receivedRequests'];
         $isFriend = true;
 
-        return view('users.users.show', compact('user', 'posts', 'sentRequests', 'receivedRequests', 'isFriend'));
+        return response()->json([
+            'user' => $user->name ,
+            'posts' => $posts ,
+            'sentRequests' => $sentRequests ,
+            'receivedRequests' => $receivedRequests ,
+            'isFriend' => $isFriend ,
+            ] , 200) ;
+
+        // return view('users.users.show', compact('user', 'posts', 'sentRequests', 'receivedRequests', 'isFriend'));
     }
 
     public function show(int $id)

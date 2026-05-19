@@ -7,8 +7,10 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+
+class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -58,12 +60,12 @@ class User extends Authenticatable
 
     public function tasks()
     {
-        return $this->hasMany(Task::class)->where('is_task' , true);
+        return $this->hasMany(Task::class)->where('is_task', true);
     }
 
     public function habits()
     {
-        return $this->hasMany(Task::class)->where('is_task' , false);
+        return $this->hasMany(Task::class)->where('is_task', false);
     }
 
     public function posts()
@@ -89,16 +91,34 @@ class User extends Authenticatable
     public function is_frend_with(User $user): bool
     {
         return $this->sentRequests()->where('receiver_id', $user->id)->where('status', 'accepted')->exists() ||
-               $this->receivedRequests()->where('sender_id', $user->id)->where('status', 'accepted')->exists();
+            $this->receivedRequests()->where('sender_id', $user->id)->where('status', 'accepted')->exists();
     }
 
     // used in factories
 
-    public function reports(){
+    public function reports()
+    {
         return $this->hasMany(Report::class);
     }
 
-    public function likes(){
+    public function likes()
+    {
         return $this->hasMany(Like::class);
+    }
+
+    // used for JWT
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [
+            'role' => $this->role,
+            'is_banned_by_moderator' => $this->is_banned_by_moderator,
+            'is_banned' => $this->is_banned,
+        ];
     }
 }
