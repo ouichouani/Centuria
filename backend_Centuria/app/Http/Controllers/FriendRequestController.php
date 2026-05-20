@@ -12,7 +12,8 @@ class FriendRequestController extends Controller
     public function index()
     {
         $friendRequests = FriendRequest::Where('receiver_id', Auth::id())->with(['sender' , 'sender.image'])->get();
-        return view('users.requests.index', compact('friendRequests'));
+        return response()->json(['data' => $friendRequests]) ;
+    
     }
 
 
@@ -21,8 +22,7 @@ class FriendRequestController extends Controller
         $data = $request->validated();
         $data['sender_id'] = Auth::id();
         FriendRequest::create($data);
-
-        return redirect()->back()->with('success', 'Friend request sent successfully.');
+        return response()->json(['data' => $data]) ;
     }
 
 
@@ -30,14 +30,15 @@ class FriendRequestController extends Controller
     {
         $this->authorize('accept', $friendRequest);
         $friendRequest->update(['status' => 'accepted']);
-        return redirect()->back()->with('success', 'Friend request accepted successfully.');
+        return response()->json(['message' => 'request accepted']) ;
     }
+
 
     public function reject(FriendRequest $friendRequest)
     {
         $this->authorize('reject', $friendRequest);
         $friendRequest->update(['status' => 'rejected']);
-        return redirect()->back()->with('success', 'Friend request rejected successfully.');
+        return response()->json(['message' => 'request rejected']) ;
     }
 
 
@@ -45,6 +46,6 @@ class FriendRequestController extends Controller
     {
         $this->authorize('delete', $request);
         $request->delete();
-        return redirect()->back()->with('success', 'Friend request deleted successfully.');
+        return response()->json(['message' => 'success', 'Friend request deleted successfully']);
     }
 }

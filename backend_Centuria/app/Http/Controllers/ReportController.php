@@ -14,20 +14,6 @@ class ReportController extends Controller
 
     public function index()
     {
-        // $this->authorize('viewAny', Report::class);
-
-        // $reports = Report::query()->with([
-        //     'user:id,name,email',
-        //     'post.user:id,name,email',
-        //     'post.user.image',
-
-        //     'post.images',
-        //     'user.image',
-
-        //     'post.comments.user:id,name,email',
-        //     'post.comments.user.image',
-
-        // ])->latest();
 
         $this->authorize('viewAny', Report::class);
 
@@ -46,15 +32,8 @@ class ReportController extends Controller
         }
 
         $posts = $posts->get() ;
-        return view('reports.index', compact('posts'));
-    }
-
-
-    public function create(Request $request)
-    {
-        $this->authorize('store' , Report::class);
-        $post_id = $request->query('post') ;
-        return view('reports.create' , compact('post_id'));
+        return response()->json(['data' => $posts]) ;
+        
     }
 
 
@@ -64,7 +43,8 @@ class ReportController extends Controller
         $report = $request->validated();
         $report['user_id'] = Auth::id() ;  
         $report = Report::create($report);
-        return redirect()->route('posts.index')->with('success', 'Report created successfully.');
+        return response()->json(['success' => 'Report created successfully.']) ;
+
     }
 
 
@@ -85,25 +65,20 @@ class ReportController extends Controller
 
         ])->latest()->get();
 
-        // dd($report);
         $post = $report?->post ;
         $comments = $post?->comments ;
         $user = $post?->user ;
 
-        return view('reports.show', compact('report' , 'post', 'comments' , 'user'));
+        return response()->json(['report' => $report, 'post'=> $post, 'comments' => $comments, 'user' => $user]) ;
+
     }
 
-
-    public function edit(Report $report)
-    {
-        $this->authorize('update', $report);
-        return view('reports.edit', compact('report'));
-    }
 
     public function destroy(Report $report)
     {
         $this->authorize('delete', $report);
         $report->delete();
-        return redirect()->route('reports.index')->with('success', 'Report deleted successfully.');
+        return response()->json(['success'=> 'Report deleted successfully.']) ;
+
     }
 }

@@ -7,7 +7,6 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\FriendRequest;
 use App\Models\Image;
-use App\Models\Post;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,17 +25,6 @@ class UserController extends Controller
 
         if (!$token = Auth::attempt($credentials)) return response()->json(['error' => 'Unauthorized'], 401);
         return $this->respondWithToken($token);
-
-        // web version ... 
-
-        // if (Auth::attempt($credentials)) {
-            // return redirect()->route('login')->with('error', 'The provided credentials do not match our records');
-        // }
-
-        // $request->session()->regenerate();
-        // if (Auth::user()->is_admin) return redirect()->route('admin.dashboard')->with('success', 'You are now logged in.');
-        // if (Auth::user()->is_moderator) return redirect()->route('moderator.dashboard')->with('success', 'You are now logged in.');
-        // return redirect()->route('dashboard')->with('success', 'You are now logged in.');
     }
 
     public function register(StoreUserRequest $request)
@@ -96,13 +84,9 @@ class UserController extends Controller
         $data = $this->loadDataForDashboard($user);
         $habits = $data['habits'];
         $tasks = $data['tasks'];
-        return view("dashboard.dashboard", compact('user', 'tasks', 'habits'));
+        return response()->json(['habits' => $habits, 'tasks' => $tasks]) ;
     }
 
-    public function showLoginForm()
-    {
-        return view('users.users.login');
-    }
 
     public function search($query, $like)
     {
@@ -124,20 +108,13 @@ class UserController extends Controller
         if ($like) $users = $this->search($users, $like);
 
         $users = $users->get();
-
-        return view('users.users.index',  compact('users'));
-    }
-
-    public function create()
-    {
-        return view('users.users.register');
+        return response()->json(['data' => $users ]) ;
     }
 
     public function loadRelationsforShow($user)
     {
         // This method is created to avoid code repetition in show and profile methods as they both need to load the same relations for the user
-        if (!$user) return redirect()->route('login')->with('error', 'Please login to view your profile');
-                // dd($user->is_frend_with(Auth::user()));
+        if (!$user) return response()->json(['error' => 'User not found'], 404);
 
         $user->load([
             'posts' => function ($q) use ($user) {
@@ -166,7 +143,6 @@ class UserController extends Controller
 
         return [
             'posts' => $user?->posts,
-            // 'posts' => $posts,
             'sentRequests' =>  $user?->sentRequests,
             'receivedRequests' => $user?->receivedRequests,
         ];
@@ -211,8 +187,6 @@ class UserController extends Controller
             'receivedRequests' => $receivedRequests ,
             'isFriend' => $isFriend ,
             ] , 200) ;
-
-        // return view('users.users.show', compact('user', 'posts', 'sentRequests', 'receivedRequests', 'isFriend'));
     }
 
     public function show(int $id)
@@ -241,13 +215,14 @@ class UserController extends Controller
         $sentRequests = $data['sentRequests'];
         $receivedRequests = $data['receivedRequests'];
 
-        return view('users.users.show', compact('user', 'posts', 'sentRequests', 'receivedRequests', 'pendingRequest', 'isFriend'));
-    }
-
-    public function edit($id)
-    {
-        $user = User::findOrFail($id);
-        return view('users.users.edit', compact('user'));
+        return response()->json([
+            'user' => $user,
+            'posts' => $posts,
+            'sentRequests' => $sentRequests,
+            'receivedRequests' => $receivedRequests,
+            'pendingRequest' => $pendingRequest,
+            'isFriend' => $isFriend
+        ]);
     }
 
     public function update(UpdateUserRequest $request, $id)
@@ -255,9 +230,7 @@ class UserController extends Controller
         try {
             $user = User::find($id);
             $this->authorize('update', $user);
-            if (!$user) {
-                throw new Exception('user not found');
-            }
+            if (!$user) throw new Exception('user not found');
 
             $data = $request->validated();
 
@@ -274,10 +247,9 @@ class UserController extends Controller
             }
 
 
-            return redirect()->route('users.show', $user->id)->with('success', 'User updated successfully.');
+            return response()->json(['success' => 'User updated successfully.', 'user' => $user]);
         } catch (Exception $e) {
-            dd($e->getMessage());
-            return redirect()->back()->with('error', $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 
@@ -287,13 +259,10 @@ class UserController extends Controller
         $user = User::find($id);
         $this->authorize('delete', $user);
 
-        if (!$user) {
-            return redirect()->back()->with('error', 'user not found');
-        }
+        if (!$user) return response()->json(['error' => 'user not found'], 400);
 
         Image::deleteOne($user) ;
         $user->delete();
-        // return redirect()->route('users.users.index')->with('success', 'User deleted successfully.');
-        return redirect()->back()->with('success', 'User deleted successfully.');
+        return response()->json(['success' => 'User deleted successfully.']);
     }
 }

@@ -26,13 +26,7 @@ class CategoryController extends Controller
         ->get();
 
         return response()->json(["data" => $categories] , 200) ;
-        // return view('tasks.categories.index', compact('categories'));
     }
-
-    // public function create()
-    // {
-    //     return view('tasks.categories.create');
-    // }
 
     public function store(StoreCategoryRequest $request)
     {
@@ -42,7 +36,6 @@ class CategoryController extends Controller
         $category = Category::create($data);
         
         return response()->json(['category' => $category ] , 200) ;
-        // return redirect()->route('categories.show', $category);
     }
 
 
@@ -62,20 +55,7 @@ class CategoryController extends Controller
         $tasks = $category->tasks;
 
         return response()->json(['category' => $category , 'habits' => $habits , 'tasks' => $tasks] , 200) ;
-        // return view('tasks.categories.show', compact('category', 'habits', 'tasks'));
     }
-
-
-    // public function edit(Category $category)
-    // {
-    //     if ($category->is_global) {
-    //         $this->authorize('accessGlobalCategories', Category::class);
-    //     } else {
-    //         $this->authorize('update', $category);
-    //     }
-    //     return view('tasks.categories.edit', compact('category'));
-    // }
-
 
     public function update(UpdateCategoryRequest $request, Category $category)
     {
@@ -85,22 +65,13 @@ class CategoryController extends Controller
         $category->save();
 
         return response()->json(['category' => $category ] , 200) ;
-        // return redirect()->route('categories.show', $category);
     }
 
     public function destroy(Category $category)
     {
-        // $destination = 'categories.index' ;
-        if ($category->is_global) {
-            $this->authorize('accessGlobalCategories', Category::class);
-            // $destination = 'categories.global' ;
-        } else {
-            $this->authorize('delete', $category);
-        }
+        $category->is_global ? $this->authorize('accessGlobalCategories', Category::class) : $this->authorize('delete', $category) ;
         $category->delete();
-        
         return response()->json(['success' => 'catehory is deleted with success' ] , 200) ;
-        // return redirect()->route($destination);
     }
 
     public function indexGlobalCategories()
@@ -109,6 +80,5 @@ class CategoryController extends Controller
         $categories = Category::where('is_global', true)->orderBy('created_at')->get();
         
         return response()->json(['category' => $categories ] , 200) ;
-        // return view('tasks.categories.index', compact('categories'));
     }
 }

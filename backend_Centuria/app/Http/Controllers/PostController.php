@@ -38,7 +38,8 @@ class PostController extends Controller
         ->where('visibility' , '<>' , 'private')
         ->latest()->get();
 
-        return view('posts.index', compact('posts'));
+        return response()->json(['data' => $posts ]) ;
+
     }
 
 
@@ -48,12 +49,7 @@ class PostController extends Controller
         $comments = $post->comments;
         $likes = $post->likes;
 
-        return view('posts.show', compact('post', 'comments', 'likes'));
-    }
-
-    public function create()
-    {
-        return view('posts.create');
+        return response()->json(['post' => $post , 'comments' => $comments, 'likes'  => $likes ]) ;
     }
 
     public function store(StorePostRequest $request)
@@ -70,15 +66,9 @@ class PostController extends Controller
         ]);
 
         if(isset($data['images'])) Image::storeMultiple($post, 'posts', $data['images']);
-        
-        // return redirect()->back() ; 
-        return redirect()->route('users.profile')->with('message', 'Post created successfully');
+        return response()->json(['message'=>'Post created successfully' ]) ;
     }
 
-    public function edit(Post $post)
-    {
-        return view('posts.edit', compact('post'));
-    }
 
     public function update(UpdatePostRequest $request, Post $post)
     {
@@ -87,9 +77,8 @@ class PostController extends Controller
         $post->update($data);
         if(isset($data['images'])) Image::storeMultiple($post, 'posts', $data['images']);
 
-        // return redirect()->back() ;
-        // return redirect()->route('posts.show', $post)->with('message', 'Post updated successfully');
-        return redirect()->route('users.profile')->with('message', 'Post updated successfully');
+        return response()->json(['message' => 'Post updated successfully']) ;
+
     }
 
     public function destroy(Post $post)
@@ -98,7 +87,6 @@ class PostController extends Controller
         Image::deleteMultiple($post) ;
 
         $post->delete();
-        return redirect()->route('posts.index')->with('message', 'Post deleted successfully');
-        // return redirect()->route('users.profile')->with('message', 'Post deleted successfully');
+        return response()->json(['message' => 'Post deleted successfully']) ;   
     }
 }

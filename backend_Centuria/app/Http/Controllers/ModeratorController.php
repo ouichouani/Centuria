@@ -17,13 +17,9 @@ class ModeratorController extends UserController
 
         // add the constraint (moderator can ban only thoes who he did ban befor , not other's banned users) : required changes on users table or new table ;
 
-        if ($user->is_banned_by_moderator) {
-            $user->is_banned_by_moderator = false;
-        } else {
-            $user->is_banned_by_moderator = true;
-        }
+        $user->is_banned_by_moderator ? $user->is_banned_by_moderator = false : $user->is_banned_by_moderator = true;
         $user->save();
-        return redirect()->back()->with('message', 'User ' . ($user->is_banned_by_moderator ? 'banned' : 'unbanned') . ' successfully');
+        return response()->json(['message' => 'User ' . ($user->is_banned_by_moderator ? 'banned' : 'unbanned') . ' successfully']) ;
     }
 
     public function confirmReport(Report $report)
@@ -37,7 +33,7 @@ class ModeratorController extends UserController
         }
 
         $report->save();
-        return redirect()->back()->with('message', 'Report ' . ($report->is_confirmed ? 'confirmed' : 'unconfirmed') . ' successfully');
+        return response()->json(['message' => 'Report ' . ($report->is_confirmed ? 'confirmed' : 'unconfirmed') . ' successfully']) ;
     }
 
     public function hidePost(Post $post)
@@ -51,7 +47,7 @@ class ModeratorController extends UserController
         }
 
         $post->save();
-        return redirect()->back()->with('message', 'Post ' . ($post->is_hidden ? 'hidden' : 'unhidden') . ' successfully');
+        return response()->json(['message' => 'Post ' . ($post->is_hidden ? 'hidden' : 'unhidden') . ' successfully' ]) ;
     }
 
     public function blackList()
@@ -68,15 +64,12 @@ class ModeratorController extends UserController
         $like = request()->query('like') ;
         if($like) $users = $this->search($users , $like) ;
         $users = $users->get();
-        
-        return view('users.users.index', compact('users'));
+        return response()->json(['data' => $users ]) ;
     }
 
     public function showHiddenPosts(){
-
         $this->authorize('manage_app' , User::class);
         $posts = Post::where('is_hidden' , true)->with(['user.image' , 'comments.user.image' , 'comments.post', 'likes', 'user.image', 'images', 'reports'])->latest()->get() ;
-        return view('posts.index' , compact('posts')) ;  
-        
+        return response()->json(['data' => $posts ]) ;
     }
 }

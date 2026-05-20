@@ -32,17 +32,7 @@ class HabitController extends Controller
         ->get();
 
         $abandoned_habits = Task::where('user_id' , $user->id)->where('category_id' , null)->where('is_task' , false)->get() ;
-        // dd($abandoned_habits) ;
-
-
-        return view('tasks.habits.index', compact('user', "categories" , "abandoned_habits"));
-    }
-
-    public function create()
-    {
-        $user = Auth::user();
-        $categories = Category::where('user_id', $user->id)->orWhere('is_global' , true)->get();
-        return view('tasks.habits.create', compact('user', 'categories'));
+        return response()->json(['abandoned_habits' => $abandoned_habits , "categories" => $categories ]) ;
     }
 
 
@@ -51,24 +41,16 @@ class HabitController extends Controller
         $data  = $request->validated();
         $data['user_id'] = Auth::id();
         $habit = Task::create($data);
-        return redirect()->route('habits.show', $habit);
+        return response()->json(['success' => 'Habit created successfully', 'habit' => $habit]);
     }
 
 
     public function show(Task $habit)
     {
         if ($habit->is_task) return redirect()->route('habits.index')->with('message', 'resource not found');
-        return view('tasks.habits.show', compact('habit'));
+        return response()->json(['habit' => $habit]);
     }
 
-
-    public function edit(Task $habit)
-    {
-        $this->authorize('update', $habit);
-        $user = Auth::user();
-        $categories = Category::where('user_id', $user->id)->orWhere('is_global' , true)->get();
-        return view('tasks.habits.edit', compact('habit', 'categories'));
-    }
 
     public function update(UpdateHabitRequest $request, Task $habit)
     {
@@ -76,7 +58,7 @@ class HabitController extends Controller
         $newHabit = $request->validated();
         $habit->update($newHabit);
         $habit->save();
-        return redirect()->route('habits.show', $habit);
+        return response()->json(['success' => 'Habit updated successfully', 'habit' => $habit]);
     }
 
 
@@ -84,6 +66,6 @@ class HabitController extends Controller
     {
         $this->authorize('delete', $habit);
         $habit->delete();
-        return redirect()->route('habits.index');
+        return response()->json(['success' => 'Habit deleted successfully']);
     }
 }
