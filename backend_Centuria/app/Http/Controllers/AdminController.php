@@ -27,7 +27,8 @@ class AdminController extends ModeratorController
             $user->is_banned = true;
         }
         $user->save();
-        return redirect()->back()->with('message', 'User '.($user->is_banned ? 'banned' : 'unbanned').' successfully');
+        return response()->json(["message" => 'User '.($user->is_banned ? 'banned' : 'unbanned').' successfully'] , 200) ;
+        // return redirect()->back()->with('message', 'User '.($user->is_banned ? 'banned' : 'unbanned').' successfully');
         // return redirect()->route('admin.users.index')->with('message', 'User '.($user->is_banned ? 'banned' : 'unbanned').' successfully');
     }
 }
