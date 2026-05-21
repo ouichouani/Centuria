@@ -3,21 +3,18 @@ import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from '../../layout.tsx';
 import { redirect } from "next/navigation";
-// import { useRouter } from "next/router";
-// import { useRouter } from "next/compat/router";
 import { useRouter } from "next/navigation";
 
 
 export default function Login() {
 
+    const { setUser , domain} = useContext(AppContext);
     const [data, setData] = useState({ email: '', password: '' });
     const [errors, setErrors] = useState();
-    const domain = 'http://localhost:80/api'
     const router = useRouter();
 
 
 
-    const { user, setUser } = useContext(AppContext);
 
     function handleChange(e) {
         setErrors("") ;
@@ -79,9 +76,6 @@ export default function Login() {
                         <h1 className="text-[2em] font-bold mb-10">LOGIN</h1>
 
                         <form onSubmit={handleSubmit} className="flex flex-col gap-7">
-                            <div>
-                                <p className='text-red-700'>{errors?.general}</p>
-                            </div>
                             <div>
                                 <label htmlFor="email" className="flex flex-col gap-2">
                                     <p>Email</p>
