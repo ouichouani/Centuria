@@ -21,9 +21,8 @@ class UserController extends Controller
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
-        ]);
-
-        if (!$token = Auth::attempt($credentials)) return response()->json(['error' => 'Unauthorized'], 401);
+            ]);
+            if (!$token = Auth::attempt($credentials)) return response()->json(['error' => 'Unauthorized'], 401);
         return $this->respondWithToken($token);
     }
 
@@ -60,7 +59,17 @@ class UserController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
-        ]);
+        ])->cookie(
+            'token',   // cookie name
+            $token,    // cookie value
+            auth()->factory()->getTTL(),        // expires in 60 minutes
+            '/',       // available on all routes
+            null,      // domain
+            false,     // secure // true means the cookie will only be sent over HTTPS, false means it can be sent over HTTP as well
+            false,     // httpOnly means the cookie cannot be accessed via JavaScript, which helps prevent XSS attacks
+            false,     // raw
+            'Lax'   // sameSite means the cookie will only be sent in first-party contexts
+        );
     }
         
     public function refresh()
