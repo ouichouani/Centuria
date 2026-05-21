@@ -115,10 +115,6 @@ class User extends Authenticatable implements JWTSubject
 
     public function getJWTCustomClaims()
     {
-        return [
-            'role' => $this->role,
-            'is_banned_by_moderator' => $this->is_banned_by_moderator,
-            'is_banned' => $this->is_banned,
-        ];
+        return [];
     }
 }

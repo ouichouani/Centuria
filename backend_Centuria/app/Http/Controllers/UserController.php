@@ -33,29 +33,18 @@ class UserController extends Controller
         $user = User::create($data);
         $token = Auth::login($user);
         return $this->respondWithToken($token) ;
-        
-        // web version ... 
-        // if (isset($image) && $image instanceof \Illuminate\Http\UploadedFile) {
-        //     Image::store($user, 'users', $data['image']);
-        // }
-        // return redirect()->route('dashboard')->with('success', 'Account created successfully.');
     }
 
     public function logout(Request $request)
     {
         Auth::logout();
         return response()->json(['message' => 'Logged out']);
-
-        // web version ... 
-        // $request->session()->invalidate();
-        // $request->session()->regenerateToken();
-        // return redirect()->route('login');
-
     }
 
     protected function respondWithToken($token)
     {
         return response()->json([
+            'user' => Auth::user()->with('image:path,imageable_id')->first(),
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
