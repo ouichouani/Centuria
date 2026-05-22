@@ -44,7 +44,7 @@ class UserController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
-            'user' => Auth::user()->with('image:path,imageable_id')->first(),
+            'user' => Auth::user()->load('image:path,imageable_id'), // this user is not changing , i keep getting the same data for one user 
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
@@ -262,5 +262,11 @@ class UserController extends Controller
         Image::deleteOne($user) ;
         $user->delete();
         return response()->json(['success' => 'User deleted successfully.']);
+    }
+
+    public function me()
+    {
+        $user = Auth::user();
+        return response()->json(['user' => $user]);
     }
 }
