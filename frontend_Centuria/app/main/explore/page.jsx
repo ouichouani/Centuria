@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
-import { AppContext } from '../../layout.tsx';
+import { AppContext } from '@/context/AppContext.jsx'
 import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
 

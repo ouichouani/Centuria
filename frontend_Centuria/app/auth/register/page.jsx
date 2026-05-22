@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
-import { AppContext } from '../../layout.tsx';
+import { AppContext } from '@/context/AppContext.jsx'
 import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
 
@@ -17,7 +17,7 @@ export default function register() {
     function handleChange(e) {
         setErrors("");
         let { name, value } = e.target;
-        setData(prev => ({ ...prev, [name]: value }));
+        setData(prev => ({ ...prev, [name]: value }));  
     }
 
     function handleSubmit(e) {
@@ -72,7 +72,7 @@ export default function register() {
 
                 <section className="h-[50%] w-[50%] pl-[10vw] lg:flex hidden flex-col gap-8 border-r border-solid border-white/30">
 
-                    <h1 className="text-[3.3em] font-bold">WELCOM, WARRIOR {user.name} </h1>
+                    <h1 className="text-[3.3em] font-bold">WELCOM, WARRIOR</h1>
                     <p className="text-[#9198a1] pl-[10px] w-[90%] ">Hi there! Welcome to Habit Trackr.<br /> We’re so excited to
                         help you start crushing your goals! Whether you're here to build new habits or just keep your daily
                         tasks on track, you've got a whole community behind you.

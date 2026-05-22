@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
-import { AppContext } from '../../layout.tsx';
+import { AppContext } from '@/context/AppContext.jsx'
 import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
 
@@ -45,7 +45,6 @@ export default function Login() {
                 if( response.status == 401) setErrors("invalid credentials") ;
                 if( response.status == 500) setErrors("server error , pleas try later") ;
 
-                console.log(response.status)
 
                 if (response.ok) {
                     setUser(result.user);
@@ -61,6 +60,7 @@ export default function Login() {
     }
 
     return (
+        
         <main className="w-full h-screen bg-[#0d1117] text-white">
             <div className="lg:flex h-full items-center">
 

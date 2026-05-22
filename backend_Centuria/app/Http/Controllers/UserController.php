@@ -75,7 +75,7 @@ class UserController extends Controller
 
         if ($user->is_banned) {
             Auth::logout();
-            return redirect()->route('login')->with('error', 'Your account has been banned. Please contact support for more information.');
+            return response()->json(['error' => 'Your account has been banned. Please contact support for more information.'], 403);
         }
 
         // select all user's habits and tasks with their categories and logs for the current month
@@ -264,9 +264,4 @@ class UserController extends Controller
         return response()->json(['success' => 'User deleted successfully.']);
     }
 
-    public function me()
-    {
-        $user = Auth::user();
-        return response()->json(['user' => $user]);
-    }
 }
