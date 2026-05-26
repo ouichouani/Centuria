@@ -81,6 +81,7 @@ class UserController extends Controller
         // select all user's habits and tasks with their categories and logs for the current month
         $data = $this->loadDataForDashboard($user);
         $habits = $data['habits'];
+        // $habits->lastLog = $habits?->logs?->last() ;
         $tasks = $data['tasks'];
         return response()->json(['habits' => $habits, 'tasks' => $tasks]) ;
     }
@@ -152,6 +153,7 @@ class UserController extends Controller
             'habits' => function ($query) {
                 $query->orderBy('title');
             },
+            'habits.lastLog' ,
             'habits.category',
             'habits.logs' => function ($query) {
                 $query->whereMonth('completed_date', now()->month)->whereYear('completed_date', now()->year)->orderBy('completed_date', 'asc');
