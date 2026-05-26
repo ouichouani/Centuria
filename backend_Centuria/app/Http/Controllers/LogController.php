@@ -96,7 +96,8 @@ class LogController extends Controller
         $log->delete();
         $this->calculateScore();
 
-        return redirect()->back()->with('message', 'log deleted successfully');
+        return response()->json(['message', 'log deleted successfully']);
+        // return redirect()->back()->with('message', 'log deleted successfully');
     }
 
     public function calculateScore()
