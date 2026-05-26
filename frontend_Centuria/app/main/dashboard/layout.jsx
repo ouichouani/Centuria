@@ -4,13 +4,6 @@ import Link from "next/link";
 import NavProvider, { NavContext } from '@/context/NavContext.jsx'
 import { useContext, useEffect } from 'react';
 
-
-
-
-
-
-
-
 export default function DashboardLayout({ children }) {
 
     const { setNav } = useContext(NavContext);
@@ -30,7 +23,6 @@ export default function DashboardLayout({ children }) {
 
     return (
         <>
-
         { children }
         </>
     )
