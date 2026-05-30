@@ -85,7 +85,7 @@ class LogController extends Controller
         // if user checked the log by mistake, he can delete it but and decrement the streaks if it was not the first day of the streaks
         $task = $log->task;
         if (!$log->completed_date->isToday()) {
-            return redirect()->back()->with('message', 'You can only delete today\'s log') ;
+            return response()->json(['message', 'You can only delete today\'s log']) ;
         }
 
         if ($task->streaks > 0) {
@@ -97,7 +97,6 @@ class LogController extends Controller
         $this->calculateScore();
 
         return response()->json(['message', 'log deleted successfully']);
-        // return redirect()->back()->with('message', 'log deleted successfully');
     }
 
     public function calculateScore()
@@ -149,7 +148,7 @@ class LogController extends Controller
     {
 
         if (!$habit) {
-            return redirect()->back()->with('message', 'Habit not found');
+            return  response()->json(['message', 'Habit not found'], 404);
         }
 
         if (!$lastLog) {
