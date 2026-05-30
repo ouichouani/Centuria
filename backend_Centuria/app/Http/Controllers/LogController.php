@@ -42,6 +42,17 @@ class LogController extends Controller
         return response()->json(['habits' => $habits, 'oldestHabit' => $oldestHabit, 'months' => $months]);
     }
 
+    public function showHistory(Task $habit)
+    {
+        // check if auth user can see the log of this habit
+        $this->authorize('create', [Log::class, $habit]);
+        $logs = Log::where('task_id', $habit->id)
+            ->orderBy('completed_date', 'desc')
+            ->limit(3)
+            ->get();
+        return response()->json(['logs' => $logs], 200);
+    }
+
     public function store(StorelogRequest $request)
     {
 
@@ -85,7 +96,7 @@ class LogController extends Controller
         // if user checked the log by mistake, he can delete it but and decrement the streaks if it was not the first day of the streaks
         $task = $log->task;
         if (!$log->completed_date->isToday()) {
-            return response()->json(['message', 'You can only delete today\'s log']) ;
+            return response()->json(['message', 'You can only delete today\'s log']);
         }
 
         if ($task->streaks > 0) {
