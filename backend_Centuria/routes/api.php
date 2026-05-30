@@ -52,6 +52,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/requests/{friendRequest}/accept', [FriendRequestController::class, 'accept'])->name('requests.accept') ;
     Route::post('/requests/{friendRequest}/reject', [FriendRequestController::class, 'reject'])->name('requests.reject') ;
     Route::delete('/logs/{log}/destroy', [LogController::class, 'destroy'])->name('logs.destroy') ;
+    Route::get('/logs/{habit}/history', [LogController::class, 'showHistory'])->name('logs.history') ;
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy') ;
     Route::post('/tasks/{task}/done', [TaskController::class, 'done'])->name('tasks.done');
 
