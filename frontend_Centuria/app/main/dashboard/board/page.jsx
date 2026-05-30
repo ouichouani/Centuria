@@ -61,7 +61,7 @@ export default async function board() {
                                         {data?.habits.map((habit, key) =>
                                             // show every habits log row by row .
                                             <tr key={key} className="border border-[#86878b] bg-[#0d1117] hover:bg-[#23262d] hover:border-blue-400">
-                                                <td className="px-3 min-w-[25px] bg-inherit sticky left-[0px] block m-0 border-x">
+                                                <td className="px-3 min-w-[25px] h-[25px] bg-inherit sticky left-[0px] block m-0 border-x">
                                                     <a href="{{ route('habits.show' , $h->id) }}">{habit.title}</a>
                                                 </td>
                                                 <HabitRow habit={habit} daysInMonth={daysInMonth} />
