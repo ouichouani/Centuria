@@ -1,4 +1,3 @@
-"use client";
 import "./globals.css";
 import AppProvider  from "@/context/AppContext.jsx";
 import NavProvider  from "@/context/NavContext.jsx";
