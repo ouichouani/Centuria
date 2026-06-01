@@ -1,5 +1,6 @@
 import HabitRow from "./HabitRow";
 import { cookies } from "next/headers";
+import Link from "next/link";
 
 
 export default async function board() {
@@ -62,7 +63,7 @@ export default async function board() {
                                             // show every habits log row by row .
                                             <tr key={key} className="border border-[#86878b] bg-[#0d1117] hover:bg-[#23262d] hover:border-blue-400">
                                                 <td className="px-3 min-w-[25px] h-[25px] bg-inherit sticky left-[0px] block m-0 border-x">
-                                                    <a href="{{ route('habits.show' , $h->id) }}">{habit.title}</a>
+                                                    <Link href={`/main/dashboard/habits/${habit.id}`}>{habit.title}</Link>
                                                 </td>
                                                 <HabitRow habit={habit} daysInMonth={daysInMonth} />
                                             </tr>
