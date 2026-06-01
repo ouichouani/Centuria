@@ -25,7 +25,7 @@ class CategoryController extends Controller
         })
         ->get();
 
-        return response()->json(["data" => $categories] , 200) ;
+        return response()->json(["categories" => $categories] , 200) ;
     }
 
     public function store(StoreCategoryRequest $request)
