@@ -19,7 +19,8 @@ class CategoryFactory extends Factory
     public function definition(): array
     {
 
-        $user = User::inRandomOrder()->first() ;
+        // $user = User::inRandomOrder()->first() ;
+        $user = (object) ['id' => 1];
         return [
             "title" => fake()->name(),
             "color" => fake()->hexColor(),

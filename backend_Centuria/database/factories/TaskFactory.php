@@ -31,12 +31,14 @@ class TaskFactory extends Factory
             'deadline' => fake()->dateTime('2026-12-20'),
             'done' => false,
             'streaks' => fake()->numberBetween(0, 365),
-            'frequency' =>  ['OneTime'] ,
-            // 'frequency' =>  fake()->randomElements(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], fake()->numberBetween(1, 7)),
+            // 'frequency' =>  ['OneTime'] ,
+            'frequency' =>  fake()->randomElements(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], fake()->numberBetween(1, 7)),
             // 'frequency' => fake()->boolean(30) ? ['OneTime'] : fake()->randomElements(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "OneTime"], fake()->numberBetween(1, 7)),
             'category_id' => $category?->id,
-            'user_id' => $user->id ,
-            'is_task' => true ,
+            'user_id' => 1 ,
+            'is_task' => false ,
+            // "created_at" => fake()->dateTimeBetween('2026-05-01', 'now'),
+            // "updated_at" => fake()->dateTimeBetween('2026-05-01', 'now'),
         ];
     }
 }
