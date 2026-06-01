@@ -47,8 +47,8 @@ class HabitController extends Controller
 
     public function show(Task $habit)
     {
-        if ($habit->is_task) return redirect()->route('habits.index')->with('message', 'resource not found');
-        return response()->json(['habit' => $habit]);
+        if ($habit->is_task) return response()->json(['message' => 'resource not found'], 404);
+        return response()->json(['habit' => $habit->load('category')]);
     }
 
 
