@@ -1,36 +1,17 @@
 "use client";
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 
 export default function UpdateHabit() {
 
-    const { id } = useParams();
     const [errors, setError] = useState({});
     const [habit, setHabit] = useState({ frequency: "", priority: "", difficulty: "", title: "" })
     const [categories, setCategories] = useState([])
     const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
     const router = useRouter();
 
-    async function getHabit() {
-        try {
-            const response = await fetch(`${domain}/habits/${id}`, {
-                method: "GET",
-                credentials: "include",
-                headers: {
-                    "accept": "Application/json",
-                    "Content-Type": "application/json",
-                }
-            });
-
-
-            const data = await response.json();
-            setHabit(data.habit);
-        } catch (error) {
-            console.log("error --> ", error)
-        }
-    }
 
     async function getCategories() {
         const response = await fetch(`${domain}/categories`, {
@@ -46,7 +27,6 @@ export default function UpdateHabit() {
     }
 
     useEffect(() => {
-        getHabit();
         getCategories();
     }, []);
 
@@ -54,12 +34,12 @@ export default function UpdateHabit() {
         const { name, value } = e.target;
         setError(prev => ({ ...prev, [name]: "" }));
 
-        if (name == "frequency" ){
+        if (name == "frequency") {
 
-            let arr =  habit.frequency.includes(value) ? habit.frequency.filter(item => item !== value) : [...habit.frequency , value]
-            setHabit(prev => ({ ...prev, [name]: [...arr]  }))
-        
-        }else{
+            let arr = habit.frequency.includes(value) ? habit.frequency.filter(item => item !== value) : [...habit.frequency, value]
+            setHabit(prev => ({ ...prev, [name]: [...arr] }))
+
+        } else {
             setHabit(prev => ({ ...prev, [name]: value }))
         }
     }
@@ -68,8 +48,8 @@ export default function UpdateHabit() {
         e.preventDefault();
 
         try {
-            const response = await fetch(`${domain}/habits/${id}`, {
-                method: "PUT",
+            const response = await fetch(`${domain}/habits`, {
+                method: "POST",
                 credentials: "include",
                 headers: {
                     "accept": "Application/json",
@@ -80,8 +60,7 @@ export default function UpdateHabit() {
 
 
             const data = await response.json();
-            console.log(data.errors)
-            if (response.ok) return router.push(`/main/dashboard/habits/${id}`);
+            if (response.ok) return router.push(`/main/dashboard/habits/${data.habit.id}`);
             if (!response.ok) setError(data.errors)
 
         } catch (error) {
@@ -93,12 +72,13 @@ export default function UpdateHabit() {
 
     return (
         <section className="mx-auto w-full max-w-4xl py-6">
-            <div className="mb-6 rounded-2xl border border-white/10 bg-[#151b23] px-6 py-5 shadow-lg">
-                <h2 className="text-xl font-bold tracking-wide text-white">Edit habit</h2>
-                <p className="mt-2 text-sm text-[#9198a1]">
-                    Update your habit details while keeping the same clean app style.
+            <div class="mb-6 rounded-2xl border border-white/10 bg-[#151b23] px-6 py-5 shadow-lg">
+                <h2 class="text-xl font-bold tracking-wide text-white">Create a new habit</h2>
+                <p class="mt-2 text-sm text-[#9198a1]">
+                    Set up your habit with the same clean workflow used across the app.
                 </p>
             </div>
+
 
             <form className="rounded-2xl border border-white/10 bg-[#151b23] p-6 shadow-lg" onSubmit={handlSubmit}>
 
@@ -233,3 +213,4 @@ export default function UpdateHabit() {
     )
 
 }
+

@@ -27,8 +27,8 @@ export default async function indexHabits() {
         <section className="mx-auto w-full max-w-6xl py-6">
             <div className="relative w-full pt-15 flex flex-col gap-5">
                 <div className="flex gap-3 absolute top-[0px] right-[0px]">
-                    <a className="p-2 bg-[#151b23] border border-solid border-white/30 rounded-lg transition hover:border-white/60"
-                        href="{{ route('habits.create') }}">add habit</a>
+                    <Link className="p-2 bg-[#151b23] border border-solid border-white/30 rounded-lg transition hover:border-white/60"
+                        href="/main/dashboard/habits/create">add habit</Link>
                 </div>
 
                 {categories?.categories?.map((cat, key) =>
