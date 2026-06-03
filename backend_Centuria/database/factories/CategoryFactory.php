@@ -26,7 +26,7 @@ class CategoryFactory extends Factory
             "color" => fake()->hexColor(),
             "description" => fake()->text(),
             "user_id" => $user->id ,
-            "is_global" => true
+            "is_global" => false
         ];
     }
 }

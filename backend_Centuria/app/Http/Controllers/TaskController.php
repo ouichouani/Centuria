@@ -32,7 +32,7 @@ class TaskController extends Controller
         ->get();
 
         $abandoned_tasks = Task::where('user_id' , $user->id)->where('category_id' , null)->where('is_task' , true)->get() ;
-        return response()->json(['user' => $user, "categories" => $categories, "abandoned_tasks" => $abandoned_tasks]);
+        return response()->json(["categories" => $categories, "abandoned_tasks" => $abandoned_tasks]);
     }
 
 
@@ -50,7 +50,7 @@ class TaskController extends Controller
     {
         $this->authorize('view' , $task) ; 
         if(!$task->is_task) return redirect()->route('tasks.index')->with('message' ,'resource not found') ;
-        return response()->json(['task' => $task]) ;
+        return response()->json(['task' => $task->load('category')]) ;
     }
 
 
