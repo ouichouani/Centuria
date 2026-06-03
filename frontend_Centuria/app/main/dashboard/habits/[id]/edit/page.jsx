@@ -125,7 +125,7 @@ export default function UpdateHabit() {
                     <div>
                         <label htmlFor="difficulty" className="flex flex-col gap-2">
                             <span className="text-sm font-medium text-white">Difficulty</span>
-                            <select id="priority" name="priority" required value={habit?.difficulty} onChange={handleChange}
+                            <select id="priority" name="difficulty" required value={habit?.difficulty} onChange={handleChange}
                                 className="p-2 px-3 bg-[#0d1117] border border-solid border-white/20 rounded-lg text-white focus:bg-transparent focus:outline-blue-500 focus:outline-2">
                                 <option className="bg-[#151b23] text-white" value="xxs">xxs</option>
                                 <option className="bg-[#151b23] text-white" value="xs">xs</option>
