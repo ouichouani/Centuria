@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 export default function UpdateHabit() {
 
     const [errors, setError] = useState({});
-    const [habit, setHabit] = useState({ frequency: "", priority: "", difficulty: "", title: "" })
+    const [habit, setHabit] = useState({ frequency: "", priority: "m", difficulty: "m", title: "" })
     const [categories, setCategories] = useState([])
     const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
     const router = useRouter();
@@ -72,9 +72,9 @@ export default function UpdateHabit() {
 
     return (
         <section className="mx-auto w-full max-w-4xl py-6">
-            <div class="mb-6 rounded-2xl border border-white/10 bg-[#151b23] px-6 py-5 shadow-lg">
-                <h2 class="text-xl font-bold tracking-wide text-white">Create a new habit</h2>
-                <p class="mt-2 text-sm text-[#9198a1]">
+            <div className="mb-6 rounded-2xl border border-white/10 bg-[#151b23] px-6 py-5 shadow-lg">
+                <h2 className="text-xl font-bold tracking-wide text-white">Create a new habit</h2>
+                <p className="mt-2 text-sm text-[#9198a1]">
                     Set up your habit with the same clean workflow used across the app.
                 </p>
             </div>
@@ -203,7 +203,7 @@ export default function UpdateHabit() {
                 <div className="mt-8 flex justify-end">
                     <button
                         className="rounded-lg border border-white/20 bg-[#0d1117] px-6 py-2 text-sm font-medium text-white transition hover:bg-green-500/20">
-                        update
+                        create
                     </button>
                 </div>
 
