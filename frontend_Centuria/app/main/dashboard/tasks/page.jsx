@@ -1,6 +1,7 @@
 
 import Link from 'next/link';
 import { cookies } from "next/headers";
+import Task from './Task.jsx'
 
 export default async function IndexTasks() {
 
@@ -46,9 +47,7 @@ export default async function IndexTasks() {
                         <section className="flex flex-col gap-4 p-[15px]">
                             {cat?.tasks.map((task, key) =>
                                 <div key={key} className="flex flex-col gap-3">
-                                    <Link href={`/main/dashboard/tasks/${task.id}`} className='flex items-center gap-2 w-fit'>
-                                        <p className="text-md">- {task.title}</p>
-                                    </Link>
+                                        <Task key={key} task={task} color={cat.color}/>
                                 </div>
                             )}
                         </section>
@@ -73,9 +72,7 @@ export default async function IndexTasks() {
 
                                 categories.abandoned_tasks.map((task, key) =>
                                     <div key={key} className="flex flex-col gap-3">
-                                        <Link href={`/main/dashboard/tasks/${task.id}`} className='flex items-center gap-2 w-fit'>
-                                            <p className="text-md">- {task.title}</p>
-                                        </Link>
+                                            <Task key={key} task={task}/>
                                     </div>
                                 )
                                 : <p>no abandoned tasks</p>}
