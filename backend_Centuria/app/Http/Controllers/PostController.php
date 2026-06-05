@@ -38,7 +38,7 @@ class PostController extends Controller
         ->where('visibility' , '<>' , 'private')
         ->latest()->get();
 
-        return response()->json(['data' => $posts ]) ;
+        return response()->json(['posts' => $posts ]) ;
 
     }
 

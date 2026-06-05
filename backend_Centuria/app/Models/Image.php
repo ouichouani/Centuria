@@ -65,4 +65,15 @@ class Image extends Model
     {
         if($model->image->path) Storage::disk('public')->delete($model->image->path) ;
     }
+
+    //use accessor to get the full URL of the image
+
+    // This tells Laravel: "include url when converting to JSON"
+    protected $appends = ['url'];
+
+    // This is the magic method that creates the value
+    public function getUrlAttribute()
+    {
+        return asset('storage/' . $this->path);
+    }
 }
