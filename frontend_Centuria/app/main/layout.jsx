@@ -7,7 +7,7 @@ import { useContext, useEffect, useRef } from "react";
 
 
 export default function MainLayout({ children }) {
-    const { pathname, pagetitle } = useContext(AppContext);
+    const { user , pathname, pagetitle } = useContext(AppContext);
     const { nav } = useContext(NavContext);
 
     const toggle = useRef();
@@ -122,10 +122,11 @@ export default function MainLayout({ children }) {
                                         <nav className="flex m-auto w-fit items-center gap-4 overflow-x-auto whitespace-nowrap text-white lg:gap-5 [&::-webkit-scrollbar]:hidden">
                                             {nav}
                                         </nav>
-                                        <a href="{{ route('users.show' , auth()->id()) }}">
-                                            <img src="{{ asset(auth()->user()?->image?->path ? 'storage/' . auth()->user()?->image?->path : 'images/blank-profile.webp') }}" alt="profile image"
+                                        <Link href="/main/profile">
+                                        
+                                            <img src={user?.image?.url ?? '/images/blank-profile.webp'} alt="profile image"
                                                 className='w-[40px] aspect-square rounded-full hidden lg:block object-cover ' />
-                                        </a>
+                                        </Link>
                                     </div>
 
                                 </div>
