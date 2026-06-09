@@ -11,25 +11,65 @@ import CommentContainer from './CommentContainer';
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime"
 dayjs.extend(relativeTime);
+const diffForHumans = (date) => {
+    return dayjs(date).fromNow()
+}
 
 
 
-export default function Post({ post }) {
+export default function Post({ post, setPosts, creator }) {
 
-    const { user, pathname } = useContext(AppContext);
+    const { domain, user, pathname } = useContext(AppContext);
     const [openComments, setOpenComments] = useState(false);
+    const [comments, setComments] = useState(post.comments || []);
 
-    const canDeleteComment = (post.user_id === user.id || (user.role === 'Admin' && post.user.role !== 'Admin'));
-    const canHide = (post.user_id != user.id && post.user.role != 'Admin' && (user.role == 'Admin' || user.role == 'Moderator'));
+    const canDeleteComment = (post.user_id === user.id || (user.role === 'Admin' && creator.role !== 'Admin'));
+    const canHide = (post.user_id != user.id && creator.role != 'Admin' && (user.role == 'Admin' || user.role == 'Moderator'));
     const canReport = (user.role === 'Client' && user.id != post.user_id)
-    const canDeletePost = (user.role == 'Admin' && (user.id == post.user_id || post.user.role != 'Admin'));
+    const canDeletePost = (user.role == 'Admin' && (user.id == post.user_id || creator.role != 'Admin'));
+    const canEditPost = user.id === post.user_id ;
 
-    const diffForHumans = (date) => {
-        return dayjs(post.created_at).fromNow()
+
+    async function handleDelete() {
+        try {
+
+            const response = await fetch(`${domain}/posts/${post.id}`, {
+                method: "DELETE",
+                credentials: "include", // store the cookie from the response
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+            });
+
+            const result = await response.json();
+            console.log(result);
+            if (response.ok) setPosts(prev => prev.filter(item => item.id != post.id))
+        } catch (error) {
+            console.error('error from console : ' + error);
+        }
+        // setPosts
     }
 
-    function handleDelete() {}
-    function handleHide() {}
+    async function handleHide() {
+        try {
+
+            const response = await fetch(`${domain}/posts/${post.id}/hide`, {
+                method: "POST",
+                credentials: "include", // store the cookie from the response
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+            });
+
+            const result = await response.json();
+            console.log(result);
+            if (response.ok) setPosts(prev => prev.filter(item => item.id != post.id))
+        } catch (error) {
+            console.error('error from console : ' + error);
+        }
+    }
 
     function toggleShowComments() {
         setOpenComments(prev => !prev);
@@ -42,13 +82,13 @@ export default function Post({ post }) {
 
                 <div className="flex items-start justify-between gap-4">
                     <div
-                        className="bg-[#151b23] w-full px-6 py-2 rounded-t-2xl flex justify-between {{ post.visibility == 'private' ? 'bg-[#25171c]' : (post.visibility == 'friends' ? 'bg-[#17251c]' : 'bg-[#151b23]') }}">
-                        <a href="{{ route('users.show', post.user.id) }}" className="flex items-center gap-4 w-fit ">
+                        className="bg-[#151b23] w-full px-6 py-2 rounded-t-2xl flex justify-between" style={post.visibility == 'private' ? {backgroundColor : '#25171c' } : post.visibility == 'friends' ? {backgroundColor : '#17251c' }: {backgroundColor : '#151b23' }}>
+                        <a href="{{ route('users.show', creator.id) }}" className="flex items-center gap-4 w-fit ">
                             <img className="h-12 w-12 rounded-full border border-white/20 bg-[#0d1117] object-cover"
-                                src={post.user.image?.url ?? "/images/blank-profile.webp"}
-                                alt={post.user.name} />
+                                src={creator.image?.url ?? "/images/blank-profile.webp"}
+                                alt={creator.name} />
                             <div>
-                                <h3 className="text-md font-semibold text-white w-fit">{post.user.name}</h3>
+                                <h3 className="text-md font-semibold text-white w-fit">{creator.name}</h3>
                                 <p className="text-sm text-[#9198a1]">{diffForHumans(post.created_at)}</p>
                             </div>
                         </a>
@@ -135,6 +175,22 @@ export default function Post({ post }) {
                                     </svg>
                                 </button>
                             }
+                            {canEditPost &&
+                                <Link href={`/main/explore/posts/${post.id}/edit`}>
+                                    
+                                    <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <g id="SVGRepo_bgCarrier" strokeWidth="0" />
+                                        <g id="SVGRepo_tracerCarrier" strokeLinecap="round"
+                                            strokeLinejoin="round" />
+                                        <g id="SVGRepo_iconCarrier">
+                                            <path fillRule="evenodd" clipRule="evenodd"
+                                                d="M21.1213 2.70705C19.9497 1.53548 18.0503 1.53547 16.8787 2.70705L15.1989 4.38685L7.29289 12.2928C7.16473 12.421 7.07382 12.5816 7.02986 12.7574L6.02986 16.7574C5.94466 17.0982 6.04451 17.4587 6.29289 17.707C6.54127 17.9554 6.90176 18.0553 7.24254 17.9701L11.2425 16.9701C11.4184 16.9261 11.5789 16.8352 11.7071 16.707L19.5556 8.85857L21.2929 7.12126C22.4645 5.94969 22.4645 4.05019 21.2929 2.87862L21.1213 2.70705ZM18.2929 4.12126C18.6834 3.73074 19.3166 3.73074 19.7071 4.12126L19.8787 4.29283C20.2692 4.68336 20.2692 5.31653 19.8787 5.70705L18.8622 6.72357L17.3068 5.10738L18.2929 4.12126ZM15.8923 6.52185L17.4477 8.13804L10.4888 15.097L8.37437 15.6256L8.90296 13.5112L15.8923 6.52185ZM4 7.99994C4 7.44766 4.44772 6.99994 5 6.99994H10C10.5523 6.99994 11 6.55223 11 5.99994C11 5.44766 10.5523 4.99994 10 4.99994H5C3.34315 4.99994 2 6.34309 2 7.99994V18.9999C2 20.6568 3.34315 21.9999 5 21.9999H16C17.6569 21.9999 19 20.6568 19 18.9999V13.9999C19 13.4477 18.5523 12.9999 18 12.9999C17.4477 12.9999 17 13.4477 17 13.9999V18.9999C17 19.5522 16.5523 19.9999 16 19.9999H5C4.44772 19.9999 4 19.5522 4 18.9999V7.99994Z"
+                                                fill="#848b93" />
+                                        </g>
+                                    </svg>
+                                </Link>
+                            }
 
                         </div>
 
@@ -168,14 +224,14 @@ export default function Post({ post }) {
 
                     <button className="comments_button flex gap-2 items-center cursor-pointer" onClick={toggleShowComments}>
                         <img className="w-[25px]" src="/svg/comments.svg" alt="" />
-                        <p className="text-sm font-semibold text-white">{post.comments.length}</p>
+                        <p className="text-sm font-semibold text-white">{comments.length}</p>
                     </button>
                 </div>
 
 
                 {openComments ?
                     <div className="comments-container px-6 mb-3 ">
-                        <CommentContainer post={post} />
+                        <CommentContainer post={post} comments={comments} setComments={setComments} />
                     </div>
                     : ''}
 

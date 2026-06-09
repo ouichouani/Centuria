@@ -1,29 +1,33 @@
 // import dayjs library to get diffForHumans functionality
+import Link from "next/link";
+
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime"
 dayjs.extend(relativeTime);
 
 
 
-export default function Comment({comment}) {
+export default function Comment({ comment, DeleteComment }) {
     const canDeleteComment = true
-    
-        const diffForHumans = (date) => {
-            return dayjs(comment.created_at).fromNow()
-        }
 
-        function handleCommentDelete(){}
-    
+    const diffForHumans = (date) => {
+        return dayjs(comment.created_at).fromNow()
+    }
+
+    function handleCommentDelete() {
+        DeleteComment(comment)
+    }
+
     return (
         <>
             <div className="border border-solid border-white/10 rounded-2xl mb-3">
                 <div className="bg-[#151b23] w-full mb-3 py-2 px-2 rounded-t-2xl flex justify-between">
 
-                    <a href="{{ route('users.show', comment.user?.id) }}"
-                        className="flex items-center gap-4 w-fit">
+                    <Link href={`/main/explore/users/${comment.user.id}`} className="flex items-center gap-4 w-fit">
+
                         <img className="h-10 w-10 rounded-full border border-white/20 bg-[#0d1117] object-cover"
-                            src="{{ asset(comment.user.image?.path ? 'storage/' . comment.user.image?.path : 'images/blank-profile.webp') }}"
-                            alt="{{ comment.user.name }}" />
+                            src={comment.user.image?.url ?? '/images/blank-profile.webp'}
+                            alt={comment.user.name} />
                         <div>
                             <h3 className="text-sm font-semibold text-white w-fit">
                                 {comment.user.name}
@@ -31,7 +35,7 @@ export default function Comment({comment}) {
                             <p className="text-xs text-[#9198a1]">
                                 {diffForHumans(comment.created_at)}</p>
                         </div>
-                    </a>
+                    </Link>
 
                     {canDeleteComment &&
                         <button onClick={handleCommentDelete}>

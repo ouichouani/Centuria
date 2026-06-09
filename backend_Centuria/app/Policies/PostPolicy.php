@@ -24,9 +24,7 @@ class PostPolicy
 
     public function update(User $user, Post $post): bool
     {
-        if($post->user_id === $user->id || $user->role === 'Admin' || $user->role === 'Moderator') {
-            return true;
-        }
+        if($post->user_id === $user->id) return true;
         return false;
     }
 

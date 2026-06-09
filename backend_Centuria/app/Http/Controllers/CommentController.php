@@ -20,8 +20,8 @@ class CommentController extends Controller
         $this->authorize('create' , [Comment::class , $post]) ;
         $data = $request->validated() ;
         $data['user_id'] = Auth::id() ;
-        Comment::create($data) ;
-        return response()->json(['message' => 'comment is created with success'] , 200) ;
+        $comment = Comment::create($data) ;
+        return response()->json(['message' => 'comment is created with success' , "comment" => $comment->load(['user' , 'user.image'])] , 200) ;
     }
 
     /**

@@ -21,8 +21,8 @@ class UserController extends Controller
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
-            ]);
-            if (!$token = Auth::attempt($credentials)) return response()->json(['error' => 'Unauthorized'], 401);
+        ]);
+        if (!$token = Auth::attempt($credentials)) return response()->json(['error' => 'Unauthorized'], 401);
         return $this->respondWithToken($token);
     }
 
@@ -32,7 +32,7 @@ class UserController extends Controller
         $data['password'] = Hash::make($data['password']);
         $user = User::create($data);
         $token = Auth::login($user);
-        return $this->respondWithToken($token) ;
+        return $this->respondWithToken($token);
     }
 
     public function logout(Request $request)
@@ -60,7 +60,7 @@ class UserController extends Controller
             'Lax'   // sameSite means the cookie will only be sent in first-party contexts
         );
     }
-        
+
     public function refresh()
     {
         return $this->respondWithToken(Auth::refresh());
@@ -83,9 +83,8 @@ class UserController extends Controller
         $habits = $data['habits'];
         // $habits->lastLog = $habits?->logs?->last() ;
         $tasks = $data['tasks'];
-        return response()->json(['habits' => $habits, 'tasks' => $tasks]) ;
+        return response()->json(['habits' => $habits, 'tasks' => $tasks]);
     }
-
 
     public function search($query, $like)
     {
@@ -107,12 +106,13 @@ class UserController extends Controller
         if ($like) $users = $this->search($users, $like);
 
         $users = $users->get();
-        return response()->json(['data' => $users ]) ;
+        return response()->json(['data' => $users]);
     }
 
-    public function loadRelationsforShow($user)
+    public function loadRelationsforShow($primaryUser)
     {
         // This method is created to avoid code repetition in show and profile methods as they both need to load the same relations for the user
+        $user = clone $primaryUser;
         if (!$user) return response()->json(['error' => 'User not found'], 404);
 
         $user->load([
@@ -120,12 +120,12 @@ class UserController extends Controller
 
                 if ($user->id != Auth::user()->id) {
                     $q->where('visibility', 'public');
-                    if ($user->is_frend_with(Auth::user())) $q->orWhere('visibility' , 'friends');
+                    if ($user->is_frend_with(Auth::user())) $q->orWhere('visibility', 'friends');
                 }
                 $q->latest();
-
             },
             'posts.comments',
+            'posts.comments.user.image:path,imageable_id',
             'posts.likes',
             'posts.images:path,imageable_id',
             'image:path,imageable_id',
@@ -153,7 +153,7 @@ class UserController extends Controller
             'habits' => function ($query) {
                 $query->orderBy('title');
             },
-            'habits.lastLog' ,
+            'habits.lastLog',
             'habits.category',
             'habits.logs' => function ($query) {
                 $query->whereMonth('completed_date', now()->month)->whereYear('completed_date', now()->year)->orderBy('completed_date', 'asc');
@@ -180,13 +180,16 @@ class UserController extends Controller
         $receivedRequests = $data['receivedRequests'];
         $isFriend = true;
 
+        // add a imojy based on the score 
+        $user->score = $user->score . ' ' . $this->getRank($user->score)  ;
+
         return response()->json([
-            'user' => $user->name ,
-            'posts' => $posts ,
-            'sentRequests' => $sentRequests ,
-            'receivedRequests' => $receivedRequests ,
-            'isFriend' => $isFriend ,
-            ] , 200) ;
+            'user' => $user->load('image:path,imageable_id'),
+            'posts' => $posts,
+            'sentRequests' => $sentRequests,
+            'receivedRequests' => $receivedRequests,
+            'isFriend' => $isFriend,
+        ], 200);
     }
 
     public function show(int $id)
@@ -215,8 +218,11 @@ class UserController extends Controller
         $sentRequests = $data['sentRequests'];
         $receivedRequests = $data['receivedRequests'];
 
+        // add a imojy based on the score 
+        $user->score = $user->score . ' ' . $this->getRank($user->score)  ;
+
         return response()->json([
-            'user' => $user,
+            'user' => $user->load('image:path,imageable_id'),
             'posts' => $posts,
             'sentRequests' => $sentRequests,
             'receivedRequests' => $receivedRequests,
@@ -261,9 +267,72 @@ class UserController extends Controller
 
         if (!$user) return response()->json(['error' => 'user not found'], 400);
 
-        Image::deleteOne($user) ;
+        Image::deleteOne($user);
         $user->delete();
         return response()->json(['success' => 'User deleted successfully.']);
     }
 
+    function getRank($score)
+    {
+        if ($score === null || $score === 0) {
+            return 'Lost Soul 👻';
+        }
+
+        return match (true) {
+            // 💀 EXTREME LOW (chaos zone)
+            $score < -400 => 'absolut shit 💩',
+            $score < -300 => 'Void Spawn 🕳️',
+            $score < -250 => 'Abyss ☠️',
+            $score < -200 => 'Cursed Skull 💀',
+            $score < -150 => 'Broken Spirit 🪫',
+            $score < -100 => 'Failed Experiment 🧪',
+            // 😵 very low
+            $score < -75 => 'Slime 🟢',
+            $score < -50 => 'baby 🍼',
+            $score < -25 => 'Potato 🥔',
+            $score < 0 => 'Rat 🐀',
+            // 🐣 beginner fail zone
+            $score < 25 => 'Bug 🐛',
+            $score < 50 => 'Dust 🌫️',
+            $score < 75 => 'Lost Wanderer 🚶',
+            $score < 100 => 'Peasant 🪵',
+            // 📈 early progress
+            $score < 150 => 'Novice 📘',
+            $score < 200 => 'Apprentice 🧪',
+            $score < 250 => 'Wanderer 🚶‍♂️',
+            $score < 300 => 'Goblin 🧌',
+            $score < 350 => 'Squire 🛡️',
+            // ⚔️ mid tier
+            $score < 400 => 'Hunter 🏹',
+            $score < 450 => 'Knight-in-Training ⚔️',
+            $score < 500 => 'Knight 🛡️',
+            $score < 550 => 'Elite Fighter 🥊',
+            $score < 600 => 'Shadow Blade 🌑',
+            $score < 650 => 'Griffin 🦅',
+            // 🔥 advanced
+            $score < 700 => 'Prince 🤴',
+            $score < 750 => 'Noble 🎩',
+            $score < 800 => 'Warlock 🧙‍♂️',
+            $score < 850 => 'Wizard 🔮',
+            $score < 900 => 'Phoenix 🔥',
+            $score < 950 => 'Dragon 🐉',
+            // 👑 elite
+            $score < 1000 => 'King 👑',
+            $score < 1100 => 'High King 👑⚔️',
+            $score < 1200 => 'Emperor 🏛️',
+            $score < 1400 => 'Overlord 🩸',
+            $score < 1600 => 'Titan ⚡',
+            $score < 1800 => 'Ancient One 🗿',
+            $score < 2000 => 'Mythic Hero 🌟',
+            // 🌌 legendary+ tiers
+            $score < 2500 => 'Celestial Guardian 🌌',
+            $score < 3000 => 'Void Reaper 🕳️⚔️',
+            $score < 4000 => 'Star Destroyer 🌠',
+            $score < 5000 => 'Reality Bender 🧠',
+            $score < 7000 => 'Eternal Legend ♾️',
+            $score < 10000 => 'Ascended One ✨',
+
+            default => 'Cosmic Sovereign 🌌👑',
+        };
+    }
 }

@@ -1,12 +1,33 @@
-import { useContext, useState } from "react";
+"use client";
+import { useContext, useEffect, useState } from "react";
 import { AppContext } from '@/context/AppContext.jsx'
 import Comment from "./Comment";
 
-export default function CommentContainer({ post }) {
+export default function CommentContainer({ post , comments , setComments }) {
 
     const { domain } = useContext(AppContext);
 
-    const [data, setData] = useState('');
+    const [data, setData] = useState({ content: '' });
+
+    async function DeleteComment(comment) {
+        try {
+            const response = await fetch(`${domain}/comments/${comment.id}`, {
+                method: "DELETE",
+                credentials: "include", // store the cookie from the response
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"
+                }
+            });
+
+            const result = await response.json();
+            console.log(result)
+            if (response.ok) setComments(prev => prev.filter(item => item.id != comment.id));
+
+        } catch (error) {
+            console.error('llll' + error);
+        }
+    }
 
     function handleChange(e) {
         const { name, value } = e.target;
@@ -17,7 +38,6 @@ export default function CommentContainer({ post }) {
         e.preventDefault();
 
         try {
-
             const response = await fetch(`${domain}/comments`, {
                 method: "POST",
                 credentials: "include", // store the cookie from the response
@@ -32,9 +52,11 @@ export default function CommentContainer({ post }) {
             });
 
             const result = await response.json();
-
-            
-            if (response.ok) setData({ content : '' });
+            console.log(result)
+            if (response.ok) {
+                setComments(prev => ([...prev, result.comment]))
+                setData({ content: '' });
+            }
 
         } catch (error) {
             console.error('llll' + error);
@@ -45,16 +67,16 @@ export default function CommentContainer({ post }) {
 
     return (
         <>
-            {post.comments?.length ?
+            {comments?.length ?
 
-                post.comments?.map((comment, key) =>
-                    <Comment key={key} comment={comment} />
+                comments?.map((comment, key) =>
+                    <Comment key={key} comment={comment} DeleteComment={DeleteComment} />
                 ) :
                 <p className="text-[#9198a1] p-3 w-[90%]">no comments for the moment</p>
             }
 
             <form onSubmit={handleSubmit} className="flex gap-1 items-center">
-                <input type="text" name='content' placeholder="comment" onChange={handleChange} value={data?.content}
+                <input type="text" name='content' placeholder="comment" required onChange={handleChange} value={data?.content}
                     className="w-full p-1 px-2 bg-[#151b23] border border-solid border-white/20 rounded-lg focus:bg-transparent focus:outline-blue-500 focus:outline-2 " />
                 <button>
                     <svg className="cursor-pointer transition hover:text-blue-400" width="25px"

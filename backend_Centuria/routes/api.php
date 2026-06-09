@@ -56,18 +56,20 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy') ;
     Route::post('/tasks/{task}/done', [TaskController::class, 'done'])->name('tasks.done');
 
+    Route::post('posts/{post}/hide', [ModeratorController::class, 'hidePost']) ;
+    Route::post('users/{user}/ban', [ModeratorController::class, 'ban'])->name('users.ban') ;
+    
     route::group(['prefix' => 'moderator'], function () {
         Route::get('users', [ModeratorController::class, 'index'])->name('moderator.users.index');
-        Route::post('users/{user}/ban', [ModeratorController::class, 'ban'])->name('moderator.users.ban') ;
-        Route::post('post/{post}/hide', [ModeratorController::class, 'hidePost'])->name('posts.hide');
+        // Route::post('post/{post}/hide', [ModeratorController::class, 'hidePost'])->name('posts.hide');
     });
 
     route::group(['prefix' => 'admin'], function () {
         Route::get('users', [AdminController::class, 'index'])->name('admin.users.index');
-        Route::post('users/{user}/ban', [AdminController::class, 'ban'])->name('admin.users.ban') ;
-        Route::post('post/{post}/hide', [AdminController::class, 'hidePost'])->name('admin.posts.hide');
-    });
-
+        // Route::post('users/{user}/ban', [AdminController::class, 'ban'])->name('admin.users.ban') ;
+        // Route::post('post/{post}/hide', [AdminController::class, 'hidePost'])->name('admin.posts.hide');
+        });
+        
     route::group(['prefix' => 'controll-panel'], function () {
         Route::get('/', [ModeratorController::class, 'blackList'])->name('blackList');
         Route::get('black-list', [ModeratorController::class, 'blackList'])->name('blackList');

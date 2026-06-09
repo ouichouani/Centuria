@@ -1,0 +1,27 @@
+"use client";
+
+import Link from "next/link";
+import NavProvider, { NavContext } from '@/context/NavContext.jsx'
+import { useContext, useEffect } from 'react';
+
+export default function ExploreLayout({ children }) {
+
+    const { setNav } = useContext(NavContext);
+
+    useEffect(() => {
+        setNav(
+            <>
+                
+            </>
+        )
+    }, []);
+
+
+    return (
+        <>
+        { children }
+        </>
+    )
+
+
+}

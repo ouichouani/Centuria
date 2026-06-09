@@ -21,15 +21,15 @@ class UserPolicy
         return false;
     }
 
-    public function ban(User $user): bool
+    public function ban(User $user , User $model): bool
     {
-        if($user->role === 'Admin') return true ;
+        if($user->role === 'Admin' && $user->id !== $model->id && $model->role !== 'Admin') return true ;
         return false;
     }
 
-    public function temp_ban (User $user):bool
+    public function temp_ban (User $user, User $model):bool
     {
-        if($user->role === 'Admin' || $user->role === 'Moderator') return true ;
+        if(($user->role === 'Admin' || $user->role === 'Moderator') && $user->id !== $model->id && $model->role !== 'Admin') return true ;
         return false;
     }
 

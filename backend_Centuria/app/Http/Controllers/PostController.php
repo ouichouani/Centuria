@@ -69,6 +69,13 @@ class PostController extends Controller
         return response()->json(['message'=>'Post created successfully' ]) ;
     }
 
+    public function edit($id){
+        $post = Post::find($id) ;
+        if(!$post) return response()->json(['message' => 'Post not found'], 404) ;
+        $this->authorize('update', $post);
+        return response()->json(['post' => $post->load('images:path,imageable_id') ]) ;
+    }
+
 
     public function update(UpdatePostRequest $request, Post $post)
     {
