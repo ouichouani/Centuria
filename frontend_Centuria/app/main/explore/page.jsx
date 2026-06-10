@@ -10,7 +10,8 @@ import Post from "./Post.jsx"
 
 export default function Explore() {
 
-    const { domain, pathname } = useContext(AppContext);
+    const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
+    const { pathname } = useContext(AppContext);
     const [posts, setPosts] = useState([]);
     const router = useRouter();
 

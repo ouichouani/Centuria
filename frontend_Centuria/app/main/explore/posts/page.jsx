@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 
 export default function CreatePost() {
 
-    const { domain } = useContext(AppContext);
+    const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
     const [data, setData] = useState({ type : "Question" , visibility : 'public' ,  content : '' , images: [] });
     const [previews, setPreviews] = useState();
     const [errors, setErrors] = useState({});

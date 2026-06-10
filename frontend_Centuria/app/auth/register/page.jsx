@@ -2,13 +2,12 @@
 import Link from "next/link";
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from '@/context/AppContext.jsx'
-import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 
 export default function register() {
-
-    const { user , setUser, domain } = useContext(AppContext);
+    const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
+    const { user , setUser } = useContext(AppContext);
     const [data, setData] = useState({ email: '', password: '' , name : '' , password_confirmation : ''});
     const [errors, setErrors] = useState({general : '' ,email: '', password: '' , name : '' , password_confirmation : '' });
     const router = useRouter();

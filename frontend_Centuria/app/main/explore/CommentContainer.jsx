@@ -5,7 +5,7 @@ import Comment from "./Comment";
 
 export default function CommentContainer({ post , comments , setComments }) {
 
-    const { domain } = useContext(AppContext);
+    const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
 
     const [data, setData] = useState({ content: '' });
 

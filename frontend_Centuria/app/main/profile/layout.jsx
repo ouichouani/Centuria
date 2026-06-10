@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import NavProvider, { NavContext } from '@/context/NavContext.jsx'
+import { NavContext } from '@/context/NavContext.jsx'
 import { useContext, useEffect } from 'react';
 
 export default function ProfaileLayout({ children }) {

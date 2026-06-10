@@ -6,8 +6,8 @@ import { useContext, useState, useEffect } from 'react';
 
 
 export default function categories() {
-
-    const { domain, user, pathname } = useContext(AppContext);
+    const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
+    const { user, pathname } = useContext(AppContext);
     const [categories, setCategories] = useState();
 
     async function getCategories() {

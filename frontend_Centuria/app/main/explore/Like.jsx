@@ -4,7 +4,7 @@ import { AppContext } from '@/context/AppContext.jsx'
 
 export default function Like({ post, user }) {
 
-    const { domain } = useContext(AppContext);
+    const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
     const [active, setActive] = useState(!!post.likes.find(item => item.user_id == user.id));
     const [likesCount, setLikeCounts] = useState(post.likes.length)
     const clickAbility = useRef(true);

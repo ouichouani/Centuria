@@ -8,7 +8,8 @@ import { useRouter } from "next/navigation";
 
 export default function Profile() {
 
-    const { user: authUser, domain } = useContext(AppContext);
+    const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
+    const { user: authUser } = useContext(AppContext);
     const router = useRouter();
     const [user, setUser] = useState({});
     const [isFriend, setIsFriend] = useState(true);

@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation";
 
 
 export default function Login() {
-
-    const { setUser , domain} = useContext(AppContext);
+    const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
+    const { setUser} = useContext(AppContext);
     const [data, setData] = useState({ email: '', password: '' });
     const [errors, setErrors] = useState();
     const router = useRouter();

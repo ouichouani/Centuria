@@ -1,3 +1,5 @@
-export default function requests(){
-    return <h1>requests</h1>
+import { redirect } from 'next/navigation';
+
+export default function RequestsPage() {
+    redirect('/main/requests/inbox');
 }
