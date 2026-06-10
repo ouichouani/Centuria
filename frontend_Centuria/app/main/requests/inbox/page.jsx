@@ -1,157 +1,78 @@
+'use client';
+// import { cookies } from "next/headers";
+import AcceptFriendRequestButton from '@/components/requests/AcceptFriendRequestButton.jsx'
+import RejectFriendRequestButton from '@/components/requests/RejectFriendRequestButton.jsx'
+import DeleteFriendRequestButton from '@/components/requests/DeleteFriendRequestButton.jsx'
+import { useEffect, useState } from 'react';
 
 export default function inbox() {
 
     const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
+    const [friendRequests , setFriendRequests] = useState([]) ;
 
-    async function fetchRequests(){
-        const response = await fetch(`${domain}/requests` , {credentials : 'include'}) ;
+    async function fetchRequests() {
+        const response = await fetch(`${domain}/requests`, {
+            credentials: "include",
+            headers: {
+                "Accept": "application/json",
+            },
+        });
+        const data = await response.json();
+        setFriendRequests(data.friendRequests)
+        console.log(data)
     }
 
+    useEffect(()=>{
+        fetchRequests() ;
+    } , []) ;
 
 
     return (
-    <section className="mx-auto w-full max-w-5xl ">
+        <section className="mx-auto w-full max-w-5xl pt-10">
 
-        <div className="mb-6 rounded-2xl border border-white/10 bg-[#151b23] px-6 py-5 shadow-lg hidden sm:block">
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <div>
-                    <h2 className="text-xl font-bold tracking-wide text-white">Friend requests</h2>
-                    <p className="mt-2 text-sm text-[#9198a1]">
-                        Review incoming requests and decide who you want to accept, reject, or remove.
-                    </p>
-                </div>
-                <div className="rounded-xl border border-white/10 bg-[#0d1117] px-4 py-3">
-                    <p className="text-xs uppercase tracking-[0.2em] text-[#9198a1]">Total requests</p>
-                    <p className="mt-2 text-lg font-semibold text-white">{ friendRequests.length }</p>
-                </div>
-            </div>
-        </div>
+            <div className="flex flex-col gap-2">
+                {friendRequests?.length ?
+                    friendRequests.map((f) =>
+                        <article key={f.id} className={`rounded-2xl border border-white/10 bg-[#151b23] p-2 md:p-4 shadow-lg transition
+                         ${(f.status == 'accepted' || f.status == 'rejected') && "opacity-40 hover:opacity-100"}`} >
+                            <div className="flex justify-between items-center md:gap-5 lg:flex-row lg:items-center lg:justify-between">
 
-        <div className="flex flex-col gap-2">
-            {/* @forelse ($friendRequests as $f) */}
-                <article className="rounded-2xl border border-white/10 bg-[#151b23] p-2 md:p-4 shadow-lg">
-                    <div className="flex justify-between items-center md:gap-5 lg:flex-row lg:items-center lg:justify-between">
+                                <div className="flex items-start gap-4">
+                                    <img src={f.sender?.image?.url || '/images/blank-profile.webp'}
+                                        alt={f.sender?.name ?? 'undefind'}
+                                        className={`h-10 w-10 md:w-16 md:h-16 rounded-full border border-white/20 bg-[#0d1117] object-cover outline outline-solid outline-[2px]
+                                        ${f.status == 'accepted' && "outline-green-500"}
+                                        ${f.status == 'rejected' && "outline-red-500"}`} />
 
-                        <div className="flex items-start gap-4">
-                            <img src="{ asset($f.sender?.image?.path ? 'storage/' . $f.sender.image.path : 'images/blank-profile.webp') }"
-                                alt="{ $f.sender?.name ?? 'undefind' }"
-                                className="h-10 w-10 md:w-16 md:h-16 rounded-full border border-white/20 bg-[#0d1117] object-cover"/>
-
-                            <div>
-                                <a href="{$f.sender?.id && route('users.show', $f.sender?.id) }">
-                                    <p className="md:text-lg text-md font-semibold text-white">{f.sender?.name ?? 'undefined'}</p>
-                                    <p className="mt-1 md:text-sm text-xs  text-[#9198a1]">{f.sender?.email ?? 'undefined'}</p>
-                                </a>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-wrap gap-3">
-                            {/* @if ($f.status == 'pending') */}
-                                <form action="{ route('requests.accept', $f.id) }" method="POST">
-                                    <button title="accept"
-                                        className="rounded-full border w-10 h-10 flex items-center justify-center cursor-pointer border-white/20 bg-[#0d1117] text-sm font-medium text-white transition hover:border-white/50">
-                                        <svg width="12px" height="12px" viewBox="0 0 32 32"
-                                            xmlns="http://www.w3.org/2000/svg" fill="#ffffff" stroke="#ffffff">
-                                            <g id="SVGRepo_bgCarrier" stroke-width="0" />
-                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
-                                            <g id="SVGRepo_iconCarrier">
-                                                <defs>
-                                                    {/* <style>
-                                                        .cls-1 {
-                                                            fill: #ffffff;
-                                                        }
-                                                    </style> */}
-                                                </defs>
-                                                <g id="check">
-                                                    <path className="cls-1"
-                                                        d="M12.16,28a3,3,0,0,1-2.35-1.13L3.22,18.62a1,1,0,0,1,1.56-1.24l6.59,8.24A1,1,0,0,0,13,25.56L27.17,4.44a1,1,0,1,1,1.66,1.12L14.67,26.67A3,3,0,0,1,12.29,28Z" />
-                                                </g>
-                                            </g>
-                                        </svg>
-                                    </button>
-                                </form>
-
-                                <form action="{ route('requests.reject', $f.id) }" method="POST">
-                                    <button title="refuse"
-                                        className="rounded-full border w-10 h-10 flex items-center justify-center cursor-pointer border-red-400/30 bg-red-500/10 text-sm font-medium text-red-200 transition hover:bg-red-500/20">
-                                        <svg width="10px" height="10px" viewBox="0 0 32 32"
-                                            xmlns="http://www.w3.org/2000/svg" fill="#000000">
-                                            <g id="SVGRepo_bgCarrier" stroke-width="0" />
-                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
-                                            <g id="SVGRepo_iconCarrier">
-                                                <defs>
-                                                    <style>
-                                                        {/* .cls-1 {
-                                                            fill: #ffffff;
-                                                        } */}
-                                                    </style>
-                                                </defs>
-                                                <g id="cancel">
-                                                    <path className="cls-1"
-                                                        d="M28,29a1,1,0,0,1-.71-.29l-24-24A1,1,0,0,1,4.71,3.29l24,24a1,1,0,0,1,0,1.42A1,1,0,0,1,28,29Z" />
-                                                    <path className="cls-1"
-                                                        d="M4,29a1,1,0,0,1-.71-.29,1,1,0,0,1,0-1.42l24-24a1,1,0,1,1,1.42,1.42l-24,24A1,1,0,0,1,4,29Z" />
-                                                </g>
-                                            </g>
-                                        </svg>
-                                    </button>
-                                </form>
-                            {/* @endif */}
-
-                            {/* @if ($f.status == 'rejected') */}
-                                <form action="{ route('requests.destroy', $f.id) }" method="POST">
-                                    <button
-                                        className=" rounded-full border  w-10 h-10 flex items-center justify-center cursor-pointer  border-white/10 bg-[#151b23] text-sm font-medium text-[#9198a1] transition hover:border-white/20 hover:text-red-500">
-                                        <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" className=""
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <g id="SVGRepo_bgCarrier" stroke-width="0" />
-                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
-                                            <g id="SVGRepo_iconCarrier">
-                                                <path
-                                                    d="M6 5H18M9 5V5C10.5769 3.16026 13.4231 3.16026 15 5V5M9 20H15C16.1046 20 17 19.1046 17 18V9C17 8.44772 16.5523 8 16 8H8C7.44772 8 7 8.44772 7 9V18C7 19.1046 7.89543 20 9 20Z"
-                                                    stroke="CurrentColor" stroke-width="2" stroke-linecap="round"
-                                                    stroke-linejoin="round" />
-                                            </g>
-                                        </svg>
-                                    </button>
-                                </form>
-                            {/* @endif */}
-                            {/* @if ($f.status == 'accepted') */}
-                                <div className="flex flex-wrap gap-3">
-                                    <span
-                                        className="rounded-full border w-10 h-10 flex items-center justify-center text-sm { $f.status === 'pending' ? 'border-yellow-400/20 bg-yellow-500/10 text-yellow-200' : ($f.status === 'accepted' ? 'border-green-400/20 bg-green-500/10 text-green-200' : 'border-red-400/20 bg-red-500/10 text-red-200') }">
-                                        {/* {-- { $f.status } --} */}
-                                        <svg width="12px" height="12px" viewBox="0 0 32 32"
-                                            xmlns="http://www.w3.org/2000/svg" fill="#ffffff" stroke="#ffffff">
-                                            <g id="SVGRepo_bgCarrier" stroke-width="0" />
-                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
-                                            <g id="SVGRepo_iconCarrier">
-                                                <defs>
-                                                    <style>
-                                                        {/* .cls-1 {
-                                                            fill: #ffffff;
-                                                        } */}
-                                                    </style>
-                                                </defs>
-                                                <g id="check">
-                                                    <path className="cls-1"
-                                                        d="M12.16,28a3,3,0,0,1-2.35-1.13L3.22,18.62a1,1,0,0,1,1.56-1.24l6.59,8.24A1,1,0,0,0,13,25.56L27.17,4.44a1,1,0,1,1,1.66,1.12L14.67,26.67A3,3,0,0,1,12.29,28Z" />
-                                                </g>
-                                            </g>
-                                        </svg>
-                                    </span>
+                                    <div>
+                                        <a href="{$f.sender?.id && route('users.show', $f.sender?.id) }">
+                                            <p className="md:text-lg text-md font-semibold text-white">{f.sender?.name ?? 'undefined'}</p>
+                                            <p className="mt-1 md:text-sm text-xs  text-[#9198a1]">{f.sender?.email ?? 'undefined'}</p>
+                                        </a>
+                                    </div>
                                 </div>
-                            {/* @endif */}
-                        </div>
 
+                                <div className="flex flex-wrap gap-3">
+                                    {f.status == 'pending' &&
+                                        <>
+                                            <AcceptFriendRequestButton id={f.id} setFriendRequests={setFriendRequests} />
+                                            <RejectFriendRequestButton id={f.id} setFriendRequests={setFriendRequests}/>
+                                        </>
+                                    }
+
+                                    {(f.status == 'rejected' || f.status == 'accepted') && <DeleteFriendRequestButton id={f.id} setFriendRequests={setFriendRequests} />}
+                                </div>
+
+                            </div>
+                        </article>
+
+                    ) :
+                    <div className="rounded-2xl border border-dashed border-white/15 bg-[#151b23] p-8 text-center shadow-lg">
+                        <p className="text-base text-[#9198a1]">there is no pending received req</p>
                     </div>
-                </article>
-            {/* @empty */}
-                <div className="rounded-2xl border border-dashed border-white/15 bg-[#151b23] p-8 text-center shadow-lg">
-                    <p className="text-base text-[#9198a1]">there is no pending received req</p>
-                </div>
-            {/* @endforelse */}
-        </div>
-    </section>
+                }
+            </div>
+
+        </section>
     )
 }

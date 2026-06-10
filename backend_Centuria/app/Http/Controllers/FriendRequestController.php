@@ -12,7 +12,7 @@ class FriendRequestController extends Controller
     public function index()
     {
         $friendRequests = FriendRequest::Where('receiver_id', Auth::id())->with(['sender' , 'sender.image'])->get();
-        return response()->json(['data' => $friendRequests]) ;
+        return response()->json(['friendRequests' => $friendRequests]) ;
     
     }
 
