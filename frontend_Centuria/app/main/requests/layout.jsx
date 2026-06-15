@@ -12,7 +12,7 @@ export default function RequestLayout({children}) {
     useEffect(() => {
         setNav(
             <>
-                <Link href={'/main/dashboard/inbox'}>inbox</Link>
+                <Link href={'/main/requests/inbox'}>inbox</Link>
                 <Link href={'/main/requests/following'}>following</Link>
                 <Link href={'/main/requests/followers'}>followers</Link>
             </>

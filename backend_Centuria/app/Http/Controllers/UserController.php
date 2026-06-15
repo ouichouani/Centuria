@@ -106,7 +106,7 @@ class UserController extends Controller
         if ($like) $users = $this->search($users, $like);
 
         $users = $users->get();
-        return response()->json(['data' => $users]);
+        return response()->json(['users' => $users]);
     }
 
     public function loadRelationsforShow($primaryUser)
@@ -253,7 +253,7 @@ class UserController extends Controller
             }
 
 
-            return response()->json(['success' => 'User updated successfully.', 'user' => $user]);
+            return response()->json(['success' => 'User updated successfully.', 'user' => $user->load('image')]);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }

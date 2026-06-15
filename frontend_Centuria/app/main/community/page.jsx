@@ -5,7 +5,9 @@ import { AppContext } from '@/context/AppContext.jsx'
 import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
 
-import Post from "./Post.jsx"
+
+import Post from "@/components/posts/Post.jsx";
+import CommentContainer from '@/components/comments/CommentContainer.jsx';
 
 
 export default function Explore() {
@@ -64,7 +66,7 @@ export default function Explore() {
 
             <div className="flex flex-col gap-6">
                 {(posts && posts.length) ?
-                    posts?.map((post) => <Post  key={post.id} post={post} creator={post.user} setPosts={setPosts} />)
+                    posts?.map((post) => <Post key={post.id} post={post} creator={post.user} setPosts={setPosts} Container={CommentContainer} />)
                     :
                     <div className="rounded-2xl border border-dashed border-white/15 bg-[#151b23] p-8 text-center shadow-lg">
                         <p className="text-base text-[#9198a1]">there is no posts yet</p>

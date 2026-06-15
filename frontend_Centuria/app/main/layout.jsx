@@ -82,7 +82,7 @@ export default function MainLayout({ children }) {
 
                             <ul className="flex flex-col gap-4 sticky top-10">
                                 <Link className={`rounded-lg px-2 py-2 transition hover:bg-[#212830] flex gap-2 ${pathname.includes('/dashboard') ? 'bg-[#212830] border-l-4 rounded-l-none border-blue-500' : ''}`} href={'/main/dashboard/board'}> <img className='w-[20px] stroke-red-100 hover:stock-blue-500' src="/svg/dashboard.svg" alt="" /> dashboard</Link>
-                                <Link className={`rounded-lg px-2 py-2 transition hover:bg-[#212830] flex gap-2 ${pathname.includes('/explore') ? 'bg-[#212830] border-l-4 rounded-l-none border-blue-500' : ''}`} href={'/main/explore'}><img className='w-[20px] fill-white/50 hover:fill-white' src="/svg/explore.svg" alt="" /> comminity</Link>
+                                <Link className={`rounded-lg px-2 py-2 transition hover:bg-[#212830] flex gap-2 ${pathname.includes('/community') ? 'bg-[#212830] border-l-4 rounded-l-none border-blue-500' : ''}`} href={'/main/community'}><img className='w-[20px] fill-white/50 hover:fill-white' src="/svg/explore.svg" alt="" /> community</Link>
                                 <Link className={`rounded-lg px-2 py-2 transition hover:bg-[#212830] flex gap-2 ${pathname.includes('/profile') ? 'bg-[#212830] border-l-4 rounded-l-none border-blue-500' : ''}`} href={'/main/profile'}><img className='w-[20px] fill-white/50 hover:fill-white' src="/svg/profile.svg" alt="" /> profile</Link>
                                 <Link className={`rounded-lg px-2 py-2 transition hover:bg-[#212830] flex gap-2 ${pathname.includes('/notifications') ? 'bg-[#212830] border-l-4 rounded-l-none border-blue-500' : ''}`} href={'/main/notifications'}><img className='w-[20px] fill-white/50 hover:fill-white' src="/svg/notification.svg" alt="" /> notification</Link>
                                 <Link className={`rounded-lg px-2 py-2 transition hover:bg-[#212830] flex gap-2 ${pathname.includes('/requests') ? 'bg-[#212830] border-l-4 rounded-l-none border-blue-500' : ''}`} href={'/main/requests'}><img className='w-[25px] fill-white/50 hover:fill-white' src="/svg/requests.svg" alt="" /> requests</Link>
@@ -98,7 +98,7 @@ export default function MainLayout({ children }) {
 
                         <section className="w-full overflow-y-auto bg-[#0d1117] text-white [&::-webkit-scrollbar]:w-[1px] [&::-webkit-scrollbar-thumb]:bg-blue-500">
                             <header
-                                className="sticky top-0 border-b border-white/30 border-solid bg-[#151b23] px-4 py-3 text-blue-100 shadow-lg z-100">
+                                className="sticky top-0 border-b border-white/30 border-solid bg-[#151b23] px-4 py-3 text-blue-100 shadow-lg z-10">
                                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
                                     <div className="flex items-center gap-3 ">

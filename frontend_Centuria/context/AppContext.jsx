@@ -13,8 +13,13 @@ export default function AppProvider({ children }) {
   // avoid the error server : ReferenceError: localStorage is not defined
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
+    if (!storedUser || storedUser === "undefined") return;
+
+    try {
       setGlobalUser(JSON.parse(storedUser));
+    } catch (err) {
+      console.error("Invalid user in localStorage:", storedUser);
+      localStorage.removeItem("user");
     }
   }, []);
 
@@ -26,6 +31,9 @@ export default function AppProvider({ children }) {
   const pathname = usePathname();
   let pagetitle = ''
   switch (true) {
+    case pathname.includes("followers"): pagetitle = 'manage followers'; break
+    case pathname.includes("following"): pagetitle = 'manage following'; break
+    case pathname.includes("inbox"): pagetitle = 'manage requests'; break
     case pathname.includes("tasks"): pagetitle = 'manage tasks'; break
     case pathname.includes("habits"): pagetitle = 'manage habits'; break
     case pathname.includes("logs"): pagetitle = 'manage logs'; break

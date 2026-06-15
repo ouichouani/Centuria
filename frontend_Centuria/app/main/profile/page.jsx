@@ -3,8 +3,12 @@
 import Link from "next/link";
 import { AppContext } from '@/context/AppContext.jsx'
 import { useContext, useEffect, useState } from 'react';
-import Post from "../explore/Post";
+import Post from "@/components/posts/Post.jsx";
 import { useRouter } from "next/navigation";
+
+import CommentContainer from '@/components/comments/CommentContainer.jsx';
+import EditProfileModel from '@/components/users/EditProfileModel.jsx';
+
 
 export default function Profile() {
 
@@ -17,6 +21,11 @@ export default function Profile() {
     const [receivedRequests, setReceivedRequests] = useState([]);
     const [pendingRequest, setPendingRequest] = useState();
     const [posts, setPosts] = useState([]);
+    const [isModelOpen, setIsModelOpen] = useState(false);
+
+    function toggleModel() {
+        setIsModelOpen(prev => !prev);
+    }
 
     async function fetchauthUser(id) {
         const response = await fetch(`${domain}/users/${id}`, {
@@ -72,7 +81,7 @@ export default function Profile() {
                 "Accept": "application/json",
                 "content-type": "application/json",
             },
-            body : JSON.stringify({receiver_id : user.id}) 
+            body: JSON.stringify({ receiver_id: user.id })
         });
 
         const data = await response.json();
@@ -147,7 +156,7 @@ export default function Profile() {
                                                 </h2>
                                                 <p className="text-md text-white">{user?.email || 'name : fetching ...'}</p>
                                                 <p className="text-md text-white ">Rank : {user?.score || 'fetching ...'}</p>
-                                                <p className="text-md text-white ">{user?.bio || 'bio : fetching ...'}</p>
+                                                <p className="text-md text-white ">{user?.bio}</p>
                                             </div>
 
                                         </div>
@@ -183,10 +192,10 @@ export default function Profile() {
 
                         {authUser.id === user?.id &&
                             <>
-                                <Link href={`/main/explore/posts/`}
+                                <button onClick={toggleModel}
                                     className="rounded-lg border border-white/20 bg-[#0d1117] px-5 py-2 text-sm font-medium text-white transition hover:border-white/50 cursor-pointer">
                                     update
-                                </Link>
+                                </button>
 
                                 <button onClick={logout}
                                     className="rounded-lg border border-red-400/30 bg-red-500/10 px-5 py-2 text-sm font-medium text-red-200 transition hover:bg-red-500/20 cursor-pointer">
@@ -275,7 +284,7 @@ export default function Profile() {
 
                 <div className="flex flex-col gap-6 mt-10">
                     {posts.length ?
-                        posts.map((post) => <Post key={post.id} post={post} setPosts={setPosts} creator={authUser} />)
+                        posts.map((post) => <Post key={post.id} post={post} setPosts={setPosts} creator={authUser} Container={CommentContainer} />)
                         :
                         <div
                             className="rounded-xl border border-dashed border-white/15 bg-[#0d1117] px-4 py-5 text-sm text-[#9198a1]">
@@ -284,6 +293,15 @@ export default function Profile() {
                     }
                 </div>
             </section>
+
+            {isModelOpen ?
+                <div className="absolute top-0 left-0 w-screen h-screen flex items-center justify-center z-20 backdrop-blur-xs">
+                    <div className="z-[13]">
+                        <EditProfileModel setIsModelOpen={setIsModelOpen} />
+                    </div>
+                    <div className='absolute top-0 left-0 w-full h-full bg-black/50' onClick={toggleModel}></div>
+                </div>
+                : ''}
 
         </section>
     )

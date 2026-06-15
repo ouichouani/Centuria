@@ -1,13 +1,12 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
-import { AppContext } from '@/context/AppContext.jsx'
-import Comment from "./Comment";
+import { useState } from "react";
+import Comment from "@/components/comments/Comment.jsx";
 
-export default function CommentContainer({ post , comments , setComments }) {
+export default function CommentContainer({ post , setCount }) {
 
     const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
-
     const [data, setData] = useState({ content: '' });
+    const [comments, setComments] = useState(post.comments || []);
 
     async function DeleteComment(comment) {
         try {
@@ -22,7 +21,10 @@ export default function CommentContainer({ post , comments , setComments }) {
 
             const result = await response.json();
             console.log(result)
-            if (response.ok) setComments(prev => prev.filter(item => item.id != comment.id));
+            if (response.ok) {
+                setComments(prev => prev.filter(item => item.id != comment.id));
+                setCount(prev => --prev) ;
+            }
 
         } catch (error) {
             console.error('llll' + error);
@@ -56,6 +58,7 @@ export default function CommentContainer({ post , comments , setComments }) {
             if (response.ok) {
                 setComments(prev => ([...prev, result.comment]))
                 setData({ content: '' });
+                setCount(prev => ++prev) ;
             }
 
         } catch (error) {

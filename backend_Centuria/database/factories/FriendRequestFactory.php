@@ -20,14 +20,22 @@ class FriendRequestFactory extends Factory
     public function definition(): array
     {
 
-        $sender = User::inRandomOrder()->first() ;
+        // $sender = User::inRandomOrder()->first() ;
+        $sender = User::inRandomOrder()->where('id' , '!=' , 1)->first() ;
         
-        $receiver = User::where('id', '!=', $sender->id)
+        $receiver = User::where('id', 1)
             ->whereDoesntHave('receivedRequests' , function($q) use ($sender){
                 $q->where("sender_id" , $sender->id ) ;
             })->whereDoesntHave('sentRequests' , function($q) use ($sender){
                 $q->where('receiver_id' , $sender->id) ;
             })->inRandomOrder()->first() ;
+
+        // $receiver = User::where('id', '!=', $sender->id)
+        //     ->whereDoesntHave('receivedRequests' , function($q) use ($sender){
+        //         $q->where("sender_id" , $sender->id ) ;
+        //     })->whereDoesntHave('sentRequests' , function($q) use ($sender){
+        //         $q->where('receiver_id' , $sender->id) ;
+        //     })->inRandomOrder()->first() ;
 
 
         return [

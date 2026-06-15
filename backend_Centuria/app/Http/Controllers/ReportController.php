@@ -32,7 +32,7 @@ class ReportController extends Controller
         }
 
         $posts = $posts->get() ;
-        return response()->json(['data' => $posts]) ;
+        return response()->json(['posts' => $posts]) ;
         
     }
 

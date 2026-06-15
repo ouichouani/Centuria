@@ -13,7 +13,7 @@ class ModeratorController extends UserController
     public function ban(User $user)
     {
 
-        if ($user->role == 'Admin') {
+        if (Auth::user()->role == 'Admin') {
             
             $this->authorize('ban', $user);
 
@@ -27,7 +27,7 @@ class ModeratorController extends UserController
             $user->save();
             return response()->json(["message" => 'User ' . ($user->is_banned ? 'banned' : 'unbanned') . ' successfully'], 200);
             
-        } else if ($user->role == 'Moderator') {
+        } else if (Auth::user()->role == 'Moderator') {
 
             $this->authorize('temp_ban', User::class);
             $user->is_banned_by_moderator ? $user->is_banned_by_moderator = false : $user->is_banned_by_moderator = true;
@@ -81,13 +81,8 @@ class ModeratorController extends UserController
         $like = request()->query('like');
         if ($like) $users = $this->search($users, $like);
         $users = $users->get();
-        return response()->json(['data' => $users]);
+        return response()->json(['blackList' => $users]);
     }
 
-    public function showHiddenPosts()
-    {
-        $this->authorize('manage_app', User::class);
-        $posts = Post::where('is_hidden', true)->with(['user.image', 'comments.user.image', 'comments.post', 'likes', 'user.image', 'images', 'reports'])->latest()->get();
-        return response()->json(['data' => $posts]);
-    }
+
 }
