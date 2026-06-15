@@ -26,7 +26,7 @@ class LogFactory extends Factory
         return [
             'task_id' => $task_id,
             'notes' => $this->faker->sentence(),
-            'completed_date' => $this->faker->dateTimeBetween('2026-04-01', 'now')->format('Y-m-d'),
+            'completed_date' => $this->faker->dateTimeBetween('2026-05-22', 'now')->format('Y-m-d'),
         ];
     }
 

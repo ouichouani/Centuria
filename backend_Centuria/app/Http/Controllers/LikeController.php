@@ -18,17 +18,13 @@ class LikeController extends Controller
 
         if ($like) {
             $like->delete();
-            return redirect()->back() ;
-            // return redirect()->route('posts.show', $validated['post_id'])->with('message', 'Like removed');
+            return response()->json(['message' => 'like deleted']);
         }
 
         Like::create([
             'user_id' => Auth::id(),
             'post_id' => $validated['post_id'],
         ]);
-
-        return redirect()->back() ;
-        // return redirect()->route('posts.show', $validated['post_id'])->with('message', 'Post liked successfully');
+        return response()->json(['message' => 'like created']);
     }
-
 }

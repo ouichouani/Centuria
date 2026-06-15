@@ -23,8 +23,8 @@ class UpdateHabitRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'sometimes|string|min:1',
-            'description' => 'nullable|string|min:3',
+            'title' => 'sometimes|string|min:1|max:255',
+            'description' => 'nullable|string|max:255',
             'difficulty' => 'sometimes|in:xxs,xs,s,m,l,xl,xxl',
             'priority' => 'sometimes|in:xxs,xs,s,m,l,xl,xxl',
             'done' => 'sometimes|boolean',

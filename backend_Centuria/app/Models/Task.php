@@ -50,5 +50,10 @@ class Task extends Model
         return $this->hasMany(Log::class, 'task_id');
     }
 
+    public function lastLog()
+    {
+        return $this->hasOne(Log::class, 'task_id')->latestOfMany('completed_date');
+    }
+
     // hello 
 }

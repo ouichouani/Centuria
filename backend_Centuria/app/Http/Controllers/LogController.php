@@ -5,13 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorelogRequest;
 use App\Models\Log;
 use App\Models\Task;
-use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use Carbon\Month;
-use DateTime;
+
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Facades\DB;
+
 
 class LogController extends Controller
 {
@@ -42,18 +39,27 @@ class LogController extends Controller
                 )
             )->reverse()->values();
         }
-
-        return view('tasks.logs.index', compact('habits', 'oldestHabit', 'months'));
+        return response()->json(['habits' => $habits, 'oldestHabit' => $oldestHabit, 'months' => $months]);
     }
 
+    public function showHistory(Task $habit)
+    {
+        // check if auth user can see the log of this habit
+        $this->authorize('create', [Log::class, $habit]);
+        $logs = Log::where('task_id', $habit->id)
+            ->orderBy('completed_date', 'desc')
+            ->limit(3)
+            ->get();
+        return response()->json(['logs' => $logs], 200);
+    }
 
     public function store(StorelogRequest $request)
     {
-        
+
         $habit = Task::where('id', $request->task_id)
-        ->where('user_id', Auth::id())
-        ->firstOrFail();
-        
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
         $this->authorize('create', [Log::class, $habit]);
 
         // check if the task is already done for today
@@ -61,17 +67,12 @@ class LogController extends Controller
             ->where('completed_date', now()->toDateString())
             ->first();
 
-        if ($existingLog) {
-            return redirect()->back()->with('message', 'Habit already marked as done for today');
-        }
+        if ($existingLog) return response()->json(['message', 'Habit already marked as done for today']);
 
         $today = now()->format('l');
-        if (!in_array($today, $habit->frequency)) {
-            return redirect()->back()->with('message', 'Habit not suppose to be done today');
-        }
+        if (!in_array($today, $habit->frequency)) return response()->json(['message', 'Habit not suppose to be done today']);
 
         // streaks logic
-
         $lastLog = Log::where('task_id', $habit->id)
             ->orderBy('completed_date', 'desc')
             ->first();
@@ -85,31 +86,29 @@ class LogController extends Controller
         $this->IncrementStreaks($habit, $lastLog);
         $this->calculateScore();
 
-        return redirect()->back()->with('message', 'log created successfully');
+        return response()->json(['message', 'log created successfully']);
     }
-
 
     public function destroy(Log $log)
     {
         $this->authorize('delete', $log);
-        
+
         // if user checked the log by mistake, he can delete it but and decrement the streaks if it was not the first day of the streaks
         $task = $log->task;
-        if(!$log->completed_date->isToday()){ 
-            return redirect()->back()->with('message', 'You can only delete today\'s log');
+        if (!$log->completed_date->isToday()) {
+            return response()->json(['message', 'You can only delete today\'s log']);
         }
 
         if ($task->streaks > 0) {
             $task->streaks -= 1;
             $task->save();
         }
-        
+
         $log->delete();
         $this->calculateScore();
 
-        return redirect()->back()->with('message', 'log deleted successfully');
+        return response()->json(['message', 'log deleted successfully']);
     }
-
 
     public function calculateScore()
     {
@@ -140,15 +139,15 @@ class LogController extends Controller
             $totalLogs = $habit->logs_count;
 
             // get all expected days in case a habit is not daily
-            $expectedDays = 1 ;
-            if((int)$habit->created_at->diffInDays(now()) > 0 ){
+            $expectedDays = 1;
+            if ((int)$habit->created_at->diffInDays(now()) > 0) {
                 $expectedDays = collect(range(0, $habit->created_at->diffInDays(now())))
-                ->map(fn($i) => $habit->created_at->copy()->addDays($i))
-                ->filter(fn($date) => (in_array($date->format('l'), $habit->frequency)))
-                ->count();
+                    ->map(fn($i) => $habit->created_at->copy()->addDays($i))
+                    ->filter(fn($date) => (in_array($date->format('l'), $habit->frequency)))
+                    ->count();
             }
 
-            return ($difficulty * $priority * $totalLogs) - ($difficulty * $priority * $expectedDays * 0.5) + $habit->streaks ;
+            return ($difficulty * $priority * $totalLogs) - ($difficulty * $priority * $expectedDays * 0.5) + $habit->streaks;
         })->avg();
 
 
@@ -160,7 +159,7 @@ class LogController extends Controller
     {
 
         if (!$habit) {
-            return redirect()->back()->with('message', 'Habit not found');
+            return  response()->json(['message', 'Habit not found'], 404);
         }
 
         if (!$lastLog) {

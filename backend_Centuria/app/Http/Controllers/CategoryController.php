@@ -13,7 +13,6 @@ class CategoryController extends Controller
     public function index()
     {
 
-
         $categories = Category::where(function($q){
             $q->where('user_id', Auth::id())->Where('is_global' , false) ;  
         })
@@ -25,13 +24,8 @@ class CategoryController extends Controller
             $q->where('user_id' , Auth::id())->where('is_global' , true) ;
         })
         ->get();
-        // dd($categories) ;
-        return view('tasks.categories.index', compact('categories'));
-    }
 
-    public function create()
-    {
-        return view('tasks.categories.create');
+        return response()->json(["categories" => $categories] , 200) ;
     }
 
     public function store(StoreCategoryRequest $request)
@@ -40,17 +34,14 @@ class CategoryController extends Controller
         $data = $request->validated();
         $data['user_id'] = Auth::id();
         $category = Category::create($data);
-        return redirect()->route('categories.show', $category);
+        
+        return response()->json(['category' => $category ] , 200) ;
     }
 
 
     public function show(Category $category)
     {
-        if ($category->is_global) {
-            $this->authorize('accessGlobalCategories', Category::class);
-        } else {
-            $this->authorize('view', $category);
-        }
+        $category->is_global ? $this->authorize('accessGlobalCategories', Category::class) : $this->authorize('view', $category);
         $category->load([
             'habits' => function ($query) {
                 $query->where('user_id', Auth::id());
@@ -63,51 +54,31 @@ class CategoryController extends Controller
         $habits = $category->habits;
         $tasks = $category->tasks;
 
-        return view('tasks.categories.show', compact('category', 'habits', 'tasks'));
+        return response()->json(['category' => $category , 'habits' => $habits , 'tasks' => $tasks] , 200) ;
     }
-
-
-    public function edit(Category $category)
-    {
-        if ($category->is_global) {
-            $this->authorize('accessGlobalCategories', Category::class);
-        } else {
-            $this->authorize('update', $category);
-        }
-        return view('tasks.categories.edit', compact('category'));
-    }
-
 
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        if ($category->is_global) {
-            $this->authorize('accessGlobalCategories', Category::class);
-        } else {
-            $this->authorize('update', $category);
-        }
+        $category->is_global ? $this->authorize('accessGlobalCategories', Category::class) : $this->authorize('update', $category);
         $data = $request->validated();
         $category->update($data);
         $category->save();
-        return redirect()->route('categories.show', $category);
+
+        return response()->json(['category' => $category ] , 200) ;
     }
 
     public function destroy(Category $category)
     {
-        $destination = 'categories.index' ;
-        if ($category->is_global) {
-            $this->authorize('accessGlobalCategories', Category::class);
-            $destination = 'categories.global' ;
-        } else {
-            $this->authorize('delete', $category);
-        }
+        $category->is_global ? $this->authorize('accessGlobalCategories', Category::class) : $this->authorize('delete', $category) ;
         $category->delete();
-        return redirect()->route($destination);
+        return response()->json(['success' => 'catehory is deleted with success' ] , 200) ;
     }
 
     public function indexGlobalCategories()
     {
         $this->authorize('accessGlobalCategories', Category::class);
         $categories = Category::where('is_global', true)->orderBy('created_at')->get();
-        return view('tasks.categories.index', compact('categories'));
+        
+        return response()->json(['category' => $categories ] , 200) ;
     }
 }

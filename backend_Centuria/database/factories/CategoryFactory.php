@@ -19,13 +19,14 @@ class CategoryFactory extends Factory
     public function definition(): array
     {
 
-        $user = User::inRandomOrder()->first() ;
+        // $user = User::inRandomOrder()->first() ;
+        $user = (object) ['id' => 1];
         return [
             "title" => fake()->name(),
             "color" => fake()->hexColor(),
             "description" => fake()->text(),
             "user_id" => $user->id ,
-            "is_global" => true
+            "is_global" => false
         ];
     }
 }

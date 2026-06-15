@@ -4,15 +4,42 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreFriendRequestRequest;
 use App\Models\FriendRequest;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class FriendRequestController extends Controller
 {
-    
+
     public function index()
     {
-        $friendRequests = FriendRequest::Where('receiver_id', Auth::id())->with(['sender' , 'sender.image'])->get();
-        return view('users.requests.index', compact('friendRequests'));
+        $friendRequests = FriendRequest::Where('receiver_id', Auth::id())->with(['sender', 'sender.image'])->get();
+        return response()->json(['friendRequests' => $friendRequests]);
+    }
+
+    public function followers(User $user)
+    {
+        $followers = FriendRequest::Where('receiver_id', $user->id)
+            ->where('status', 'accepted')
+            ->with(['sender', 'sender.image'])
+            ->select("friend_requests.*")
+            ->selectRaw("
+        EXISTS(
+            SELECT 1
+            FROM friend_requests fr2
+            WHERE fr2.sender_id = friend_requests.receiver_id
+            AND fr2.receiver_id = friend_requests.sender_id
+            AND fr2.status IN ('accepted', 'accepted')
+        ) as is_following_back
+    ")
+            ->get();
+        return response()->json(['followers' => $followers]);
+    }
+
+    public function following(User $user)
+    {
+        $following = FriendRequest::Where('sender_id', $user->id)->with(['receiver', 'receiver.image'])
+            ->where('status', 'accepted')->get();
+        return response()->json(['following' => $following]);
     }
 
 
@@ -21,8 +48,7 @@ class FriendRequestController extends Controller
         $data = $request->validated();
         $data['sender_id'] = Auth::id();
         FriendRequest::create($data);
-
-        return redirect()->back()->with('success', 'Friend request sent successfully.');
+        return response()->json(['data' => $data]);
     }
 
 
@@ -30,14 +56,15 @@ class FriendRequestController extends Controller
     {
         $this->authorize('accept', $friendRequest);
         $friendRequest->update(['status' => 'accepted']);
-        return redirect()->back()->with('success', 'Friend request accepted successfully.');
+        return response()->json(['message' => 'request accepted']);
     }
+
 
     public function reject(FriendRequest $friendRequest)
     {
         $this->authorize('reject', $friendRequest);
         $friendRequest->update(['status' => 'rejected']);
-        return redirect()->back()->with('success', 'Friend request rejected successfully.');
+        return response()->json(['message' => 'request rejected']);
     }
 
 
@@ -45,6 +72,6 @@ class FriendRequestController extends Controller
     {
         $this->authorize('delete', $request);
         $request->delete();
-        return redirect()->back()->with('success', 'Friend request deleted successfully.');
+        return response()->json(['message' => 'success', 'Friend request deleted successfully']);
     }
 }

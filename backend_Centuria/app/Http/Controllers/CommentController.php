@@ -20,9 +20,8 @@ class CommentController extends Controller
         $this->authorize('create' , [Comment::class , $post]) ;
         $data = $request->validated() ;
         $data['user_id'] = Auth::id() ;
-        Comment::create($data) ;
-        return redirect()->back() ;
-        // return redirect()->route('posts.show' , $comment->post_id)->with('message' , 'comment added successfully') ;
+        $comment = Comment::create($data) ;
+        return response()->json(['message' => 'comment is created with success' , "comment" => $comment->load(['user' , 'user.image'])] , 200) ;
     }
 
     /**
@@ -32,7 +31,6 @@ class CommentController extends Controller
     {
         $this->authorize('delete', $comment);
         $comment->delete() ;
-        return redirect()->back() ;
-        // return redirect()->route('posts.show' , $comment->post_id)->with('message' , 'comment deleted successfully') ;
+        return response()->json(['message' => 'comment is deleted with success'] , 200) ;
     }
 }

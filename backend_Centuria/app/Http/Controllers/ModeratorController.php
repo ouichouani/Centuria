@@ -13,17 +13,30 @@ class ModeratorController extends UserController
     public function ban(User $user)
     {
 
-        $this->authorize('temp_ban' , User::class );
+        if (Auth::user()->role == 'Admin') {
+            
+            $this->authorize('ban', $user);
 
-        // add the constraint (moderator can ban only thoes who he did ban befor , not other's banned users) : required changes on users table or new table ;
+            if ($user->is_banned || $user->is_banned_by_moderator) {
+                $user->is_banned_by_moderator = false;
+                $user->is_banned = false;
+            } else {
+                $user->is_banned = true;
+            }
+            
+            $user->save();
+            return response()->json(["message" => 'User ' . ($user->is_banned ? 'banned' : 'unbanned') . ' successfully'], 200);
+            
+        } else if (Auth::user()->role == 'Moderator') {
 
-        if ($user->is_banned_by_moderator) {
-            $user->is_banned_by_moderator = false;
-        } else {
-            $user->is_banned_by_moderator = true;
+            $this->authorize('temp_ban', User::class);
+            $user->is_banned_by_moderator ? $user->is_banned_by_moderator = false : $user->is_banned_by_moderator = true;
+            $user->save();
+            return response()->json(['message' => 'User ' . ($user->is_banned_by_moderator ? 'banned' : 'unbanned') . ' successfully']);
+
+        }else {
+            return response()->json(['message' => 'You cannot ban this user.'] , 403);
         }
-        $user->save();
-        return redirect()->back()->with('message', 'User ' . ($user->is_banned_by_moderator ? 'banned' : 'unbanned') . ' successfully');
     }
 
     public function confirmReport(Report $report)
@@ -37,12 +50,12 @@ class ModeratorController extends UserController
         }
 
         $report->save();
-        return redirect()->back()->with('message', 'Report ' . ($report->is_confirmed ? 'confirmed' : 'unconfirmed') . ' successfully');
+        return response()->json(['message' => 'Report ' . ($report->is_confirmed ? 'confirmed' : 'unconfirmed') . ' successfully']);
     }
 
     public function hidePost(Post $post)
     {
-        if (Auth::user()->role === 'Client') return redirect()->back()->with('error', 'You cannot hide a post. Please contact an admin to hide this post.');
+        if (Auth::user()->role === 'Client') return response()->json(['message' => 'You cannot hide a post. Please contact an admin to hide this post.']);
 
         if ($post->is_hidden) {
             $post->is_hidden = false;
@@ -51,32 +64,25 @@ class ModeratorController extends UserController
         }
 
         $post->save();
-        return redirect()->back()->with('message', 'Post ' . ($post->is_hidden ? 'hidden' : 'unhidden') . ' successfully');
+        return response()->json(['message' => 'Post ' . ($post->is_hidden ? 'hidden' : 'unhidden') . ' successfully']);
     }
 
     public function blackList()
     {
-        $this->authorize('manage_app' , User::class);
+        $this->authorize('manage_app', User::class);
         $users = null;
 
         if (Auth::user()->role != 'Admin') {
-            $users = User::where('is_banned_by_moderator' , true)->where('is_banned' , false) ;
+            $users = User::where('is_banned_by_moderator', true)->where('is_banned', false);
         } else {
-            $users = User::where('is_banned_by_moderator' , true)->orWhere('is_banned' , true) ;
+            $users = User::where('is_banned_by_moderator', true)->orWhere('is_banned', true);
         }
 
-        $like = request()->query('like') ;
-        if($like) $users = $this->search($users , $like) ;
+        $like = request()->query('like');
+        if ($like) $users = $this->search($users, $like);
         $users = $users->get();
-        
-        return view('users.users.index', compact('users'));
+        return response()->json(['blackList' => $users]);
     }
 
-    public function showHiddenPosts(){
 
-        $this->authorize('manage_app' , User::class);
-        $posts = Post::where('is_hidden' , true)->with(['user.image' , 'comments.user.image' , 'comments.post', 'likes', 'user.image', 'images', 'reports'])->latest()->get() ;
-        return view('posts.index' , compact('posts')) ;  
-        
-    }
 }
