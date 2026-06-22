@@ -1,7 +1,12 @@
 'use client'
+import { AppContext } from '@/context/AppContext.jsx'
+import { useContext } from 'react';
+
 
 export default function AcceptFriendRequestButton({id , setFriendRequests}) {
+
     const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
+    const {notify} = useContext(AppContext) ;
 
     async function acceptRequest() {
         const response = await fetch(`${domain}/requests/${id}/accept`, {
@@ -14,7 +19,10 @@ export default function AcceptFriendRequestButton({id , setFriendRequests}) {
         });
         const data = await response.json() ;
 
-        if(response.ok) setFriendRequests(prev => prev.map(item => item.id === id ? { ...item, status: 'accepted' } : item) ) ;
+        if(response.ok) {
+            setFriendRequests(prev => prev.map(item => item.id === id ? { ...item, status: 'accepted' } : item) ) ;
+            notify('request accepted') ;
+        }
         console.log(data) ;
     }
 

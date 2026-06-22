@@ -1,10 +1,14 @@
 "use client";
 
 import { useRouter } from  "next/navigation";
+import { AppContext } from '@/context/AppContext.jsx'
+import { useContext } from "react";
+
 
 export default function DeleteHabit({ id }) {
     const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
-    const router = useRouter()
+    const router = useRouter() ;
+    const {notify} = useContext(AppContext) ;
 
     async function handleClick() {
         const response = await fetch(`${domain}/categories/${id}`, {
@@ -18,7 +22,10 @@ export default function DeleteHabit({ id }) {
 
             const data = await response.json();
             console.log(data) ;
-            if(response.ok) router.push("/main/dashboard/categories");
+            if(response.ok) {
+                notify('categorie is deleted' , 'orange') ;
+                router.push("/main/dashboard/categories");
+            }
 
     }
 

@@ -28,7 +28,35 @@ export default function AppProvider({ children }) {
     setGlobalUser((prev) => ({ ...prev, ...item }));
   }
 
+  // TEMP NOTIFICATION GLOBAL STATE
+  const [toastNotification, setToastNotification] = useState([]);
+
+  // INSERT AN OBJECT IN THE TOAST STATE . IT NEES A MESSAGE
+  function notify(message , color = 'green', duration = 3000) {
+
+    const id = new Date().getTime();
+    setToastNotification(prev => ([...prev, { removing: false, id: id, message : message , color : color }]));
+
+    setTimeout(() => {
+
+      setToastNotification(prev =>
+        prev.map(item =>
+          item.id === id
+            ? { ...item, removing: true }
+            : item
+        )
+      );
+
+      setTimeout(() => {
+        setToastNotification(prev => prev.filter(item => item.id != id));
+      }, 500);
+
+    }, duration);
+
+  }
+
   const pathname = usePathname();
+
   let pagetitle = ''
   switch (true) {
     case pathname.includes("followers"): pagetitle = 'manage followers'; break
@@ -49,9 +77,18 @@ export default function AppProvider({ children }) {
     default: pagetitle = 'Centuria'; break
   }
 
+  const sharedValues = {
+    user: globalUser,
+    setUser: setUser,
+    domain: domain,
+    pathname: pathname,
+    pagetitle: pagetitle,
+    toastNotification: toastNotification,
+    notify : notify 
+  }
 
   return (
-    <AppContext.Provider value={{ user: globalUser, setUser: setUser, domain: domain, pathname: pathname, pagetitle: pagetitle }} >
+    <AppContext.Provider value={{ ...sharedValues }} >
       {children}
     </AppContext.Provider>
   )

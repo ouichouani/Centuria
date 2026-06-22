@@ -38,7 +38,9 @@ class UserController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-        return response()->json(['message' => 'Logged out']);
+        return response()->json(['message' => 'Logged out'])->withCookie(
+            cookie()->forget('token')
+        );
     }
 
     protected function respondWithToken($token)

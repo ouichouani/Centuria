@@ -8,22 +8,21 @@ export default function DashboardLayout({ children }) {
 
     const { setNav } = useContext(NavContext);
 
+
     useEffect(() => {
-        setNav(
-            <>
-                <Link href={'/main/dashboard/board'}>board</Link>
-                <Link href={'/main/dashboard/tasks'}>tasks</Link>
-                <Link href={'/main/dashboard/habits'}>habits</Link>
-                <Link href={'/main/dashboard/categories'}>categories</Link>
-                <Link href={'/main/dashboard/history'}>history</Link>
-            </>
-        )
+        setNav([
+            { title: 'board', href: '/main/dashboard/board', imageSrc: '/svg/notification.svg' },
+            { title: 'tasks', href: '/main/dashboard/tasks', imageSrc: '/svg/notification.svg' },
+            { title: 'habits', href: '/main/dashboard/habits', imageSrc: '/svg/notification.svg' },
+            { title: 'categories', href: '/main/dashboard/categories', imageSrc: '/svg/notification.svg' },
+            { title: 'history', href: '/main/dashboard/history', imageSrc: '/svg/notification.svg' },
+        ]);
     }, []);
 
 
     return (
         <>
-        { children }
+            {children}
         </>
     )
 

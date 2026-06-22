@@ -5,6 +5,8 @@ import { AppContext } from '@/context/AppContext.jsx'
 export default function Log({ habit, index_date }) {
 
     const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
+    const {notify} = useContext(AppContext) ;
+
     const [log , setLog] = useState(habit.last_log) ;
     const [done, setDon] = useState(new Date(log?.completed_date).setHours(0, 0, 0, 0) == index_date);
     const [loading, setLoading] = useState(false);
@@ -50,7 +52,10 @@ export default function Log({ habit, index_date }) {
 
             const result = await response.json();
             console.log(result);
-            if(response.ok && response.ok ) setDon(prev => !prev);
+            if(response.ok ) {                
+                setDon(prev => !prev);
+                notify('mession is undone' , 'orange') ;
+            }
             setLoading(false) ;
         }
 
@@ -81,7 +86,10 @@ export default function Log({ habit, index_date }) {
             });
 
             const result = await response.json();
-            if(response.ok && response.ok ) setDon(prev => !prev);
+            if(response.ok && response.ok ) {
+            notify('mession is done')    
+                setDon(prev => !prev);
+            }
             console.log(result);
             setLoading(false) ;
         }

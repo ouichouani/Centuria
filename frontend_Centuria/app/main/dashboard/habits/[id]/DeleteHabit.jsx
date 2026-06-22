@@ -1,8 +1,12 @@
 "use client";
 
 import { useRouter } from  "next/navigation";
+import { AppContext } from '@/context/AppContext.jsx'
+
 
 export default function DeleteHabit({ id }) {
+
+    const { notify } = useContext(AppContext);
     const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
     const router = useRouter()
 
@@ -18,7 +22,10 @@ export default function DeleteHabit({ id }) {
 
             const data = await response.json();
             console.log(data) ;
-            if(response.ok) router.push("/main/dashboard/habits");
+            if(response.ok) {
+                notify('habi is deleted' , 'orange');    
+                router.push("/main/dashboard/habits");
+            }
 
     }
 

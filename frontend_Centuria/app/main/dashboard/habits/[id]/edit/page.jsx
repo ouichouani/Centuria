@@ -2,10 +2,13 @@
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { AppContext } from '@/context/AppContext.jsx'
+
 
 
 export default function UpdateHabit() {
 
+    const { notify } = useContext(AppContext);
     const { id } = useParams();
     const [errors, setError] = useState({});
     const [habit, setHabit] = useState({ frequency: "", priority: "m", difficulty: "m", title: "" })
@@ -54,12 +57,12 @@ export default function UpdateHabit() {
         const { name, value } = e.target;
         setError(prev => ({ ...prev, [name]: "" }));
 
-        if (name == "frequency" ){
+        if (name == "frequency") {
 
-            let arr =  habit.frequency.includes(value) ? habit.frequency.filter(item => item !== value) : [...habit.frequency , value]
-            setHabit(prev => ({ ...prev, [name]: [...arr]  }))
-        
-        }else{
+            let arr = habit.frequency.includes(value) ? habit.frequency.filter(item => item !== value) : [...habit.frequency, value]
+            setHabit(prev => ({ ...prev, [name]: [...arr] }))
+
+        } else {
             setHabit(prev => ({ ...prev, [name]: value }))
         }
     }
@@ -81,7 +84,10 @@ export default function UpdateHabit() {
 
             const data = await response.json();
             console.log(data.errors)
-            if (response.ok) return router.push(`/main/dashboard/habits/${id}`);
+            if (response.ok) {
+                notify('habi is updated with success');     
+                return router.push(`/main/dashboard/habits/${id}`);
+            }
             if (!response.ok) setError(data.errors)
 
         } catch (error) {

@@ -26,7 +26,9 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'bio',
         'role',
-        'score'
+        'score' ,
+        'social_id' ,
+        'social_type' ,
 
     ];
 
@@ -116,5 +118,12 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    // used for social login
+    
+    public function oauth()
+    {
+        return $this->hasMany(Oauth::class);
     }
 }

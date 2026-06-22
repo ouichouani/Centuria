@@ -1,14 +1,16 @@
 "use client";
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { AppContext } from '@/context/AppContext.jsx'
+import { useContext, useEffect, useState } from 'react';
 
 
 export default function UpdateHabit() {
 
     const { id } = useParams();
+    const { notify } = useContext(AppContext);
     const [errors, setError] = useState({});
-    const [category, setCategory] = useState({title : "" , color : "" ,description : "" })
+    const [category, setCategory] = useState({ title: "", color: "", description: "" })
     const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
     const router = useRouter();
 
@@ -54,7 +56,10 @@ export default function UpdateHabit() {
 
             const data = await response.json();
             console.log(data.errors)
-            if (response.ok) return router.push(`/main/dashboard/categories/${id}`);
+            if (response.ok) {
+                notify('category is updated');
+                return router.push(`/main/dashboard/categories/${id}`);
+            }
             if (!response.ok) setError(data.errors)
 
         } catch (error) {
@@ -80,7 +85,7 @@ export default function UpdateHabit() {
                         <label htmlFor="title" className="flex flex-col gap-2">
                             <span className="text-sm font-medium text-white">Title</span>
                             <input id="title" type="text" name="title" value={category?.title} onChange={handleChange} placeholder="title"
-                                className="p-2 px-3 bg-[#0d1117] border border-solid border-white/20 rounded-lg text-white placeholder:text-[#9198a1] focus:bg-transparent focus:outline-blue-500 focus:outline-2"/>
+                                className="p-2 px-3 bg-[#0d1117] border border-solid border-white/20 rounded-lg text-white placeholder:text-[#9198a1] focus:bg-transparent focus:outline-blue-500 focus:outline-2" />
                         </label>
                         <div className="mt-2 text-sm text-red-400">{errors?.title}</div>
                     </div>

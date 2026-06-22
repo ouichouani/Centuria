@@ -12,7 +12,7 @@ export default function ReportContainer({ post, setCount, setPosts }) {
 
     const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
     const [reports, setReports] = useState(post.reports || []);
-    const {user} = useContext(AppContext)
+    const {user , notify } = useContext(AppContext)
 
     async function DeleteReport(report) {
         try {
@@ -40,6 +40,8 @@ export default function ReportContainer({ post, setCount, setPosts }) {
                         prev.filter(item => item.id !== post.id)
                     );
                 }
+
+                notify('report deleted' , 'orange') ;
             }
 
         } catch (error) {
@@ -73,6 +75,9 @@ export default function ReportContainer({ post, setCount, setPosts }) {
                         prev.filter(item => item.id !== post.id)
                     );
                 }
+
+                notify('report confirmed') ;
+
             }
         } catch (error) {
             console.error('llll' + error);

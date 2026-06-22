@@ -9,11 +9,12 @@ export default function ExploreLayout({ children }) {
     const { setNav } = useContext(NavContext);
 
     useEffect(() => {
-        setNav(
-            <>
-                
-            </>
-        )
+        setNav([
+            { title: 'posts', href: '/main/community/posts', imageSrc: '/svg/notification.svg' },
+            { title: 'network', href: '/main/community/network', imageSrc: '/svg/notification.svg' },
+            { title: 'tribes', href: '/main/community/tribes', imageSrc: '/svg/notification.svg' },
+            { title: 'chalenges', href: '/main/community/tribes', imageSrc: '/svg/notification.svg' },
+        ]);
     }, []);
 
 
