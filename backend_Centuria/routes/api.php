@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\NotificationController;
@@ -25,6 +26,8 @@ Route::get('/user', function (Request $request) {
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 
+Route::get('/auth/{provider}', [AuthController::class, 'redirectToProvider']);
+Route::get('/auth/{provider}/callback', [AuthController::class, 'callback']);
 
 Route::middleware('auth:api')->group(function () {
 

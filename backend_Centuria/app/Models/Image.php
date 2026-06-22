@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Image extends Model
 {
@@ -20,12 +21,21 @@ class Image extends Model
         // if the model is a user
         if (!$model instanceof User) throw new \InvalidArgumentException('store() expects a User model.');
 
-        if($model->image) {
+        if ($model->image) {
             Storage::disk('public')->delete($model->image->path);
             $model->image()->delete();
         }
 
-        $path = $image->store($folder, 'public');
+        // $path = $image->store($folder, 'public');
+        $path = null;
+
+        if ($image instanceof \Illuminate\Http\UploadedFile) {
+            $path = $image->store($folder, 'public');
+        } else {
+            // TO SUPPORT GOOGLE AVATARS, WE NEED TO DOWNLOAD THE IMAGE AND STORE IT LOCALLY
+            $path = $folder . '/' . Str::uuid() . '.jpg';
+            Storage::disk('public')->put($path, $image);
+        }
 
         return $model->image()->create([
             'path' => $path
@@ -42,7 +52,7 @@ class Image extends Model
         $storedImages = [];
 
         foreach ($images as $image) {
-            if(!isset($image) or !$image instanceof \Illuminate\Http\UploadedFile) continue ;
+            if (!isset($image) or !$image instanceof \Illuminate\Http\UploadedFile) continue;
             $path = $image->store($folder, 'public');
 
             $storedImages[] = $model->images()->create([
@@ -55,15 +65,15 @@ class Image extends Model
 
     static function deleteMultiple($model)
     {
-        $ids = $model->images()->pluck('id') ;
-        foreach($ids as $id){
-            Storage::disk('public')->delete(Image::find($id)->path) ;
+        $ids = $model->images()->pluck('id');
+        foreach ($ids as $id) {
+            Storage::disk('public')->delete(Image::find($id)->path);
         }
     }
 
     static function deleteOne($model)
     {
-        if($model->image->path) Storage::disk('public')->delete($model->image->path) ;
+        if ($model->image->path) Storage::disk('public')->delete($model->image->path);
     }
 
     //use accessor to get the full URL of the image
