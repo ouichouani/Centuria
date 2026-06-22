@@ -2,10 +2,13 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { AppContext } from '@/context/AppContext.jsx'
+
 
 
 export default function UpdateHabit() {
 
+    const { notify } = useContext(AppContext);
     const [errors, setError] = useState({});
     const [habit, setHabit] = useState({ frequency: "", priority: "m", difficulty: "m", title: "" })
     const [categories, setCategories] = useState([])
@@ -60,7 +63,10 @@ export default function UpdateHabit() {
 
 
             const data = await response.json();
-            if (response.ok) return router.push(`/main/dashboard/habits/${data.habit.id}`);
+            if (response.ok) {
+                notify('new habi is added with success');    
+                return router.push(`/main/dashboard/habits/${data.habit.id}`);
+            }
             if (!response.ok) setError(data.errors)
 
         } catch (error) {

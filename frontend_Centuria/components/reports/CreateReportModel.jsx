@@ -1,5 +1,6 @@
 'use client';
-import { useEffect, useRef, useState } from "react";
+import { AppContext } from '@/context/AppContext.jsx'
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 
 export default function CreateReportModel({ post, setIsModelOpen }) {
 
@@ -10,6 +11,8 @@ export default function CreateReportModel({ post, setIsModelOpen }) {
 
 
     const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
+    const { notify } = useContext(AppContext);
+
     const [errors, setErrors] = useState({});
     const [data, setData] = useState({ type: "spam", description: '' });
 
@@ -42,7 +45,10 @@ export default function CreateReportModel({ post, setIsModelOpen }) {
 
             const result = await response.json();
             console.log(result)
-            if (response.ok) setIsModelOpen(prev => !prev);
+            if (response.ok) {
+                notify('the post reported with success !', "orange");
+                setIsModelOpen(prev => !prev);
+            }
 
         } catch (error) {
             console.error('AYAYAAAY' + error);

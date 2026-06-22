@@ -2,10 +2,13 @@
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { AppContext } from '@/context/AppContext.jsx'
+
 
 
 export default function UpdateTask() {
 
+    const { notify } = useContext(AppContext);
     const { id } = useParams();
     const [errors, setError] = useState({});
     const [task, setTask] = useState({ frequency: "", description :"" , priority: "m", difficulty: "m", title: "" , deadline : new Date().toISOString().split('T')[0] })
@@ -75,7 +78,11 @@ export default function UpdateTask() {
 
 
             const data = await response.json();
-            if (response.ok) return router.push(`/main/dashboard/tasks/${id}`);
+            if (response.ok) {
+                
+                notify('task is updated with success') ;    
+                return router.push(`/main/dashboard/tasks/${id}`);
+            }
             if (!response.ok) setError(data.errors)
 
         } catch (error) {

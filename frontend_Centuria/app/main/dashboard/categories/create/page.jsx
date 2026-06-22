@@ -1,19 +1,20 @@
 "use client";
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { AppContext } from '@/context/AppContext.jsx'
 
 
 export default function CreateHabit() {
 
     const [errors, setError] = useState({});
+    const {notify} = useContext(AppContext) ;
     const [category, setCategory] = useState({title : "" , color : "" ,description : "" })
     const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
     const router = useRouter();
 
 
     function handleChange(e) {
-
         const { name, value } = e.target
         setError(prev => ({ ...prev, [name]: "" }));
         setCategory(prev => ({ ...prev, [name]: value }));
@@ -36,7 +37,10 @@ export default function CreateHabit() {
 
             const data = await response.json();
             console.log(data.errors)
-            if (response.ok) return router.push(`/main/dashboard/categories/${data.category.id}`);
+            if (response.ok) {
+                notify('new categorie is added') ;
+                return router.push(`/main/dashboard/categories/${data.category.id}`);
+            }
             if (!response.ok) setError(data.errors)
 
         } catch (error) {

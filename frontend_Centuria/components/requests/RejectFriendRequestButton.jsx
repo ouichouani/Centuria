@@ -1,8 +1,10 @@
 'use client'
-
+import { AppContext } from '@/context/AppContext.jsx'
+import { useContext } from 'react';
 export default function RejectFriendRequestButton({id , setFriendRequests}) {
 
     const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
+    const {notify} = useContext(AppContext) ;
 
     async function rejectRequest() {
         const response = await fetch(`${domain}/requests/${id}/reject`, {
@@ -14,7 +16,11 @@ export default function RejectFriendRequestButton({id , setFriendRequests}) {
             }
         });
         const data = await response.json() ;
-        if(response.ok) setFriendRequests(prev => prev.map(item => item.id === id ? { ...item, status: 'rejected' } : item) ) ;
+        if(response.ok) {
+            setFriendRequests(prev => prev.map(item => item.id === id ? { ...item, status: 'rejected' } : item) ) ;
+            notify('request rejected' , 'orange') ;
+
+        }
         console.log(data) ;
     }
 

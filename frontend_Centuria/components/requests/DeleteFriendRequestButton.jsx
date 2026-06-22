@@ -1,9 +1,12 @@
 'use client'
-
+import { AppContext } from '@/context/AppContext.jsx'
+import { useContext } from 'react';
 export default function DeleteFriendRequestButton({id , setFriendRequests}) {
 
 
     const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
+    const {notify} = useContext(AppContext) ;
+
 
     async function deleteRequest() {
         const response = await fetch(`${domain}/requests/${id}`, {
@@ -15,7 +18,10 @@ export default function DeleteFriendRequestButton({id , setFriendRequests}) {
             }
         });
         const data = await response.json();
-        if(response.ok) setFriendRequests(prev => prev.filter(item => item.id != id) ) ;
+        if(response.ok) {
+            setFriendRequests(prev => prev.filter(item => item.id != id) ) ;
+            notify('request deleted' , 'orange') ;
+        }
         console.log(data) ;
         console.log(data);
     }

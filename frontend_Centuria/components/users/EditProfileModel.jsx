@@ -7,7 +7,7 @@ export default function CreateReportModel({ setIsModelOpen }) {
     
     // setIsModelOpen IS A STATE THAT OPEN OR CLOSE THE MODEL IN PARENT COMPONENT
     // user IS THE GLOBAL USER THAT WE WANT TO UPDATE 
-    const { user , setUser } = useContext(AppContext);
+    const { user , setUser , notify } = useContext(AppContext);
 
 
     const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
@@ -62,6 +62,8 @@ export default function CreateReportModel({ setIsModelOpen }) {
             
                 if (result.user) setUser(result.user) ;
                 setIsModelOpen(prev => !prev);
+                notify('profile updated with success') ;
+
             }
 
         } catch (error) {

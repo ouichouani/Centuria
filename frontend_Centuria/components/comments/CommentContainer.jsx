@@ -1,10 +1,13 @@
 "use client";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Comment from "@/components/comments/Comment.jsx";
+import { AppContext } from '@/context/AppContext.jsx'
+
 
 export default function CommentContainer({ post , setCount }) {
 
     const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
+    const { notify } = useContext(AppContext);
     const [data, setData] = useState({ content: '' });
     const [comments, setComments] = useState(post.comments || []);
 
@@ -24,6 +27,7 @@ export default function CommentContainer({ post , setCount }) {
             if (response.ok) {
                 setComments(prev => prev.filter(item => item.id != comment.id));
                 setCount(prev => --prev) ;
+                notify('comment deleted' , 'orange') ;
             }
 
         } catch (error) {
@@ -59,6 +63,7 @@ export default function CommentContainer({ post , setCount }) {
                 setComments(prev => ([...prev, result.comment]))
                 setData({ content: '' });
                 setCount(prev => ++prev) ;
+                notify('comment created') ;
             }
 
         } catch (error) {

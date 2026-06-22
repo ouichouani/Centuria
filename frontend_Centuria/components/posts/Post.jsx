@@ -16,7 +16,7 @@ const diffForHumans = (date) => {
 
 
 
-export default function Post({ post, setPosts, creator, type = "comments", Container}) {
+export default function Post({ post, setPosts, creator, type = "comments", Container }) {
 
     // post CONTAIN DATA OF THE POST PROVIDED BY THE PARENT 
     // setPosts UPDATES THE STATE OF THE PARENT
@@ -25,7 +25,7 @@ export default function Post({ post, setPosts, creator, type = "comments", Conta
     // type USER TO KNOW IF THE COMPONENT NEED TO SHOW SERTAIN BUTTONS AND COMPONENTS OR NOT
 
     const domain = process.env.NEXT_PUBLIC_API_DOMAIN;
-    const { user, pathname } = useContext(AppContext);
+    const { user, pathname, notify } = useContext(AppContext);
 
     // OPEN OR CLOSE THE CONTAINER THAT SHOWS REPORST OR COMMENTS
     const [isOpen, setIsOpen] = useState(false);
@@ -35,7 +35,7 @@ export default function Post({ post, setPosts, creator, type = "comments", Conta
 
     // THIS COMPONENT SHOW BOTH REPORTS AND COMMENTS . count STATE SHOW THE COUNT OF THEM
     // USED HERE TO AVOID DEFINE COMMENT STATE HERE 
-    const [count, setCount] = useState(type == "comments" ? post.comments.length : post.reports.length );
+    const [count, setCount] = useState(type == "comments" ? post.comments.length : post.reports.length);
 
 
     // PERMITION THAT THE AUTH USER CAN DO
@@ -60,7 +60,10 @@ export default function Post({ post, setPosts, creator, type = "comments", Conta
 
             const result = await response.json();
             console.log(result);
-            if (response.ok) setPosts(prev => prev.filter(item => item.id != post.id))
+            if (response.ok) {
+                setPosts(prev => prev.filter(item => item.id != post.id));
+                notify('post deleted', 'orange');
+            }
         } catch (error) {
             console.error('error from console : ' + error);
         }
@@ -80,7 +83,10 @@ export default function Post({ post, setPosts, creator, type = "comments", Conta
 
             const result = await response.json();
             console.log(result);
-            if (response.ok) setPosts(prev => prev.filter(item => item.id != post.id))
+            if (response.ok) {
+                setPosts(prev => prev.filter(item => item.id != post.id));
+                notify('post deleted', 'orange');
+            }
         } catch (error) {
             console.error('error from console : ' + error);
         }
@@ -256,7 +262,7 @@ export default function Post({ post, setPosts, creator, type = "comments", Conta
                 </div>
 
                 <div className="flex flex-wrap gap-3 px-5 py-4">
-                    
+
                     {type === 'comments' &&
                         <div className="flex flex-wrap gap-3 px-5 py-4">
                             <Like post={post} user={user} />
