@@ -10,13 +10,13 @@ export default function RequestLayout({children}) {
     const { setNav } = useContext(NavContext);
 
     useEffect(() => {
-        setNav(
-            <>
-                <Link href={'/main/requests/inbox'}>inbox</Link>
-                <Link href={'/main/requests/following'}>following</Link>
-                <Link href={'/main/requests/followers'}>followers</Link>
-            </>
-        )
+
+        setNav([
+            {title: 'inbox', href: '/main/requests/inbox', imageSrc: '/svg/notification.svg' },
+            {title: 'following', href: '/main/requests/following', imageSrc: '/svg/notification.svg' }, 
+            {title: 'followers', href: '/main/requests/followers', imageSrc: '/svg/notification.svg' },
+        ]) ;
+        
     }, []);
 
 
