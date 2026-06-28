@@ -275,14 +275,14 @@ export default function Profile() {
 
                 {authUser.id === user?.id &&
                     <div className="mb-6 flex items-center justify-between gap-4">
-                        <Link title='add post' href='/main/explore/posts' title='create Post'
+                        <Link title='add post' href='/main/community/posts' title='create Post'
                             className="rounded-full border border-white/20 bg-[#0d1117] w-10 h-10 text-sm font-medium text-white transition hover:border-white/50 cursor-pointer flex items-center justify-center">
                             <span>+</span>
                         </Link>
                     </div>
                 }
 
-                <div className="flex flex-col gap-6 mt-10">
+                <div className="flex flex-col gap-6 mt-10 items-center">
                     {posts.length ?
                         posts.map((post) => <Post key={post.id} post={post} setPosts={setPosts} creator={authUser} Container={CommentContainer} />)
                         :

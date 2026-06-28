@@ -27,7 +27,7 @@ export default function SideBar() {
                 <div className="w-full h-full relative" >
 
 
-                    <ul className="bg-[#151b23] bg-red -500 py-3 group w-[60px] px-[10px] min-w-fit flex flex-col gap-3 relative left-[1 0px] transition-all duration-300 rounded-lg">
+                    <ul className="bg-[#151b23] bg-red -500 py-3 group w-[60px] px-[10px] min-w-fit flex flex-col gap-2 relative left-[1 0px] transition-all duration-300 rounded-lg">
                         <div className="absolute top-[-20px] left-[40px]  -rotate-90 opacity-100 group-hover:opacity-100 group-hover:left-[60px] duration-500 transition-all " style={BORDERDIVSTYLE}></div>
 
 
@@ -64,6 +64,13 @@ export default function SideBar() {
                                 <img src="/svg/requests.svg" alt="" className='w-full h-full hrink-0' />
                             </div>
                             <span className="max-w-0 text-nowrap opacity-0 overflow-hidden group-hover:opacity-100 group-hover:max-w-[200px] md:group-hover:max-w-[10vw] transition-all duration-300">requests</span>
+                        </Link>
+
+                        <Link className={`${pathname.includes('/dms') ? 'bg-[#212830] ' : ''} flex items-center gap-0 group-hover:gap-3 rounded-lg p-2 transition-all duration-300 hover:bg-[#212830] `} href={'/main/dms'}>
+                            <div className="w-[25px] h-[25px] " >
+                                <img src="/svg/dms.svg" alt="" className='w-full h-full hrink-0' />
+                            </div>
+                            <span className="max-w-0 text-nowrap opacity-0 overflow-hidden group-hover:opacity-100 group-hover:max-w-[200px] md:group-hover:max-w-[10vw] transition-all duration-300">messages</span>
                         </Link>
 
                         <Link className={`${pathname.includes('/controll-panel') ? 'bg-[#212830] ' : ''} flex items-center gap-0 group-hover:gap-3 rounded-lg p-2 transition-all duration-300 hover:bg-[#212830] `} href={'/main/controll-panel'}>
