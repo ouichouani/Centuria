@@ -45,34 +45,18 @@ export default function Explore() {
 
 
     return (
-        <section className="mx-auto w-full max-w-6xl">
-
-            {/* {pathname.includes("main/controll-panel") &&
-                <div className="mb-6 rounded-2xl border border-white/10 bg-[#151b23] px-6 py-5 shadow-lg">
-                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <h2 className="text-xl font-bold tracking-wide text-white">hidden posts</h2>
-                            <p className="mt-2 text-sm text-[#9198a1]">
-                                Review hidden posts.
-                            </p>
+        <section className="mx-auto w-full max-w-6xl flex gap-2 pt-20">
+            <div className="w-full h-full bg-green-600">profile</div>
+            <div className="flex flex-col gap-6 items-center">
+                    {(posts && posts.length) ?
+                        posts?.map((post) => <Post key={post.id} post={post} creator={post.user} setPosts={setPosts} Container={CommentContainer} />)
+                        :
+                        <div className="rounded-2xl border border-dashed border-white/15 bg-[#151b23] p-8 text-center shadow-lg">
+                            <p className="text-base text-[#9198a1]">there is no posts yet</p>
                         </div>
-                        <div className="rounded-xl border border-white/10 bg-[#0d1117] px-4 py-3 hidden md:block">
-                            <p className="text-xs uppercase tracking-[0.2em] text-[#9198a1]">Total posts</p>
-                            <p className="mt-2 text-lg font-semibold text-white">{posts.length}</p>
-                        </div>
-                    </div>
-                </div>
-            } */}
-
-            <div className="flex flex-col gap-6">
-                {(posts && posts.length) ?
-                    posts?.map((post) => <Post key={post.id} post={post} creator={post.user} setPosts={setPosts} Container={CommentContainer} />)
-                    :
-                    <div className="rounded-2xl border border-dashed border-white/15 bg-[#151b23] p-8 text-center shadow-lg">
-                        <p className="text-base text-[#9198a1]">there is no posts yet</p>
-                    </div>
-                }
+                    }
             </div>
+            <div className="w-full h-full bg-red-600">comment</div>
         </section>
 
 

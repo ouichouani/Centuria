@@ -38,4 +38,8 @@ class Post extends Model
     public function reports(){
         return $this->hasMany(Report::class) ;
     }
+
+    public function video(){
+        return $this->hasOne(Video::class) ;
+    }
 }

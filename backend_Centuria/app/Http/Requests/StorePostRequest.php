@@ -23,11 +23,36 @@ class StorePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'content' => 'nullable|string|max:500|required_without:images',
+            'content' => 'nullable|string|max:500',
             'type' => 'required|in:Question,History,Encouragement',
             'visibility' => 'required|in:public,private,friends',
             'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048|required_without:content',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'video' => 'nullable|file|mimes:mp4,mov,avi|max:102400', // max 100MB
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
+            $hasContent = $this->filled('content');
+            $hasImages = !empty($this->file('images'));
+            $hasVideo = $this->hasFile('video');
+
+            if (!$hasContent && !$hasImages && !$hasVideo) {
+                $validator->errors()->add('content', 'You must provide either content, images, or a video.');
+            }
+
+            if( $hasImages && $hasVideo) {
+                // $validator->errors()->add('images', 'You cannot upload both images and a video in the same post.');
+                $validator->errors()->add('video', 'You cannot upload both images and a video in the same post.');
+            }
+
+        });
     }
 }

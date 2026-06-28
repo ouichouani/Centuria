@@ -104,8 +104,8 @@ export default function Post({ post, setPosts, creator, type = "comments", Conta
 
 
     return (
-        <article className="rounded-2xl border border-white/10 shadow-lg">
-            <div className="flex flex-col gap-5 transition">
+        <article className="rounded-2xl border border-white/10 shadow-lg md:w-[600px]  w-full ">
+            <div className="flex flex-col gap-5 transition ">
 
                 <div className="flex items-start justify-between gap-4">
                     <div
@@ -123,7 +123,6 @@ export default function Post({ post, setPosts, creator, type = "comments", Conta
                         <div className="flex gap-2 items-center">
 
                             {canReport &&
-                                // <Link href={`/main/reports/${post.id}`}>
                                 <svg width="25px" height="25px" viewBox="0 0 48 48" version="1.1" onClick={toggleModel}
                                     title="report" className="text-[#848b93] hover:text-red-500"
                                     xmlns="http://www.w3.org/2000/svg"
@@ -162,7 +161,6 @@ export default function Post({ post, setPosts, creator, type = "comments", Conta
                                         </g>
                                     </g>
                                 </svg>
-                                // </Link>
                             }
 
                             {canHide &&
@@ -221,7 +219,7 @@ export default function Post({ post, setPosts, creator, type = "comments", Conta
                             }
 
                             {canEditPost &&
-                                <Link href={`/main/explore/posts/${post.id}/edit`}>
+                                <Link href={`/main/community/posts/${post.id}/edit`}>
 
                                     <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
@@ -250,14 +248,20 @@ export default function Post({ post, setPosts, creator, type = "comments", Conta
                     </div>
 
                     {post.images.length ?
-                        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                        <div className="columns-2 gap-1">
                             {post?.images?.map((image, key) =>
-                                <img key={key} className="h-56 w-full rounded-xl border border-white/10 bg-[#0d1117] object-cover"
+                                <img key={key} className="w-full rounded-xl border border-white/10 bg-[#0d1117] object-cover"
                                     src={image.url} alt="post image" />
 
                             )}
                         </div>
                         : ""}
+
+                    {post.video &&
+                        <div className="bg-gre en-400 flex items-center justify-center">
+                            <video src={post.video.url} controls className='rounded-lg max-h-[70vh]'></video>
+                        </div>
+                    }
 
                 </div>
 

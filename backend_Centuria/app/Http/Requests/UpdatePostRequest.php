@@ -16,8 +16,7 @@ class UpdatePostRequest extends FormRequest
     {
         $user = Auth::id();
         $post = Post::where('id', $this->route('post')->id)->where('user_id', $user)->first();
-        return isset($post) ;
-         
+        return isset($post);
     }
 
     /**
@@ -28,11 +27,14 @@ class UpdatePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'content' => 'nullable|string|max:500|required_without:images',
+            'content' => 'nullable|string|max:500',
             'type' => 'nullable|in:Question,History,Encouragement',
             'visibility' => 'nullable|in:public,private,friends',
             'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048|required_without:content',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            "deletedImages" => 'nullable',
+            "deletedImages.*" => 'integer|exists:images,id',
+            'video' => 'nullable|file|mimes:mp4,mov,avi|max:102400'
         ];
     }
 
@@ -44,4 +46,48 @@ class UpdatePostRequest extends FormRequest
         ];
     }
 
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
+
+
+            $hasContent = $this->filled('content');
+            $hasImages = !empty($this->file('images'));
+            $hasVideo = $this->hasFile('video');
+
+            $post = $this->route('post');
+            $posImagesCount = $post->images()->count();
+            $postHasImages = $post->images()->exists();
+            $postHasVideo = $post->video()->exists();
+            $deletedImages = $this->input('deletedImages', []);
+            $deletedCount = $post->images()
+                ->whereIn('id', $deletedImages)
+                ->count();
+
+            // CHECK IF THERE IS ANY CONTENT (VIDEO . IMAGES . CONTENT ) UPLOADED
+            // IF NOT CHECK IF THE POST HAS A VIDEO
+            // IF NOT CHECK IF THE POST HAS IMAGES
+            // IF YES CHECK IF THEY ARE DELETED OR NOT 
+            // IF YES THROW A VALIDATION ERROR
+            if (!$hasContent && !$hasImages && !$hasVideo) {
+                if (!$postHasVideo) {
+                    if (!$postHasImages) {
+                        $validator->errors()->add('content', 'You must provide either content, images, or a video.');
+                    } else if ($deletedCount >= $posImagesCount) {
+                        $validator->errors()->add('content', 'You must provide either content, images, or a video.');
+                    }
+                }
+            }
+
+
+            if ($hasImages && $hasVideo) {
+                $validator->errors()->add('video', 'You cannot upload both images and a video in the same post.');
+            }
+        });
+    }
 }

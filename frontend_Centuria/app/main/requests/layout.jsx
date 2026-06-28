@@ -12,9 +12,9 @@ export default function RequestLayout({children}) {
     useEffect(() => {
 
         setNav([
-            {title: 'inbox', href: '/main/requests/inbox', imageSrc: '/svg/notification.svg' },
-            {title: 'following', href: '/main/requests/following', imageSrc: '/svg/notification.svg' }, 
-            {title: 'followers', href: '/main/requests/followers', imageSrc: '/svg/notification.svg' },
+            {title: 'inbox', href: '/main/requests/inbox', imageSrc: '/svg/inbox.svg' },
+            {title: 'following', href: '/main/requests/following', imageSrc: '/svg/following.svg' }, 
+            {title: 'followers', href: '/main/requests/followers', imageSrc: '/svg/followers.svg' },
         ]) ;
         
     }, []);

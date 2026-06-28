@@ -129,6 +129,7 @@ class UserController extends Controller
             'posts.comments',
             'posts.comments.user.image:path,imageable_id',
             'posts.likes',
+            'posts.video',
             'posts.images:path,imageable_id',
             'image:path,imageable_id',
 

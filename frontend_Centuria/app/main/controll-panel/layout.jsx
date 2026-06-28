@@ -10,9 +10,9 @@ export default function ControllPanelLayout({ children }) {
 
     useEffect(() => {
         setNav([
-            { title: 'blacklist', href: '/main/controll-panel/blacklist', imageSrc: '/svg/notification.svg' },
-            { title: 'hidden-posts', href: '/main/controll-panel/posts', imageSrc: '/svg/notification.svg' },
-            { title: 'reports', href: '/main/controll-panel/reports', imageSrc: '/svg/notification.svg' },
+            { title: 'blacklist', href: '/main/controll-panel/blacklist', imageSrc: '/svg/black-list.svg' },
+            { title: 'hidden-posts', href: '/main/controll-panel/posts', imageSrc: '/svg/hidden-posts.svg' },
+            { title: 'reports', href: '/main/controll-panel/reports', imageSrc: '/svg/reports.svg' },
         ]);
     }, []);
 

@@ -10,10 +10,10 @@ export default function ExploreLayout({ children }) {
 
     useEffect(() => {
         setNav([
-            { title: 'posts', href: '/main/community/posts', imageSrc: '/svg/notification.svg' },
-            { title: 'network', href: '/main/community/network', imageSrc: '/svg/notification.svg' },
-            { title: 'tribes', href: '/main/community/tribes', imageSrc: '/svg/notification.svg' },
-            { title: 'chalenges', href: '/main/community/tribes', imageSrc: '/svg/notification.svg' },
+            { title: 'posts', href: '/main/community/posts', imageSrc: '/svg/posts.svg' },
+            { title: 'network', href: '/main/community/network', imageSrc: '/svg/network.svg' },
+            { title: 'tribes', href: '/main/community/tribes', imageSrc: '/svg/tribes.svg' },
+            { title: 'chalenges', href: '/main/community/tribes', imageSrc: '/svg/chalenges.svg' },
         ]);
     }, []);
 
