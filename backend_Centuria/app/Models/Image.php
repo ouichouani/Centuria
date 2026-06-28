@@ -68,12 +68,22 @@ class Image extends Model
         $ids = $model->images()->pluck('id');
         foreach ($ids as $id) {
             Storage::disk('public')->delete(Image::find($id)->path);
+            Image::find($id)->delete();
         }
     }
 
     static function deleteOne($model)
     {
         if ($model->image->path) Storage::disk('public')->delete($model->image->path);
+    }
+
+    static function deleteById($id)
+    {
+        $image = Image::find($id);
+        if ($image) {
+            Storage::disk('public')->delete($image->path);
+            $image->delete();
+        }
     }
 
     //use accessor to get the full URL of the image

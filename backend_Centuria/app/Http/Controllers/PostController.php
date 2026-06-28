@@ -7,6 +7,7 @@ use App\Http\Requests\UpdatePostRequest;
 use App\Models\Image;
 use App\Models\Post;
 use App\Models\User;
+use App\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -32,7 +33,7 @@ class PostController extends Controller
                     ->orWhere("visibility", "public")
                     ->orWhere("user_id", $user->id);
             })
-            ->with(['comments.user.image', 'comments.post', 'likes', 'user.image', 'images', 'reports' => function ($q) {
+            ->with(['comments.user.image', 'comments.post', 'likes', 'user.image', 'images', 'video', 'reports' => function ($q) {
                 $q->where('user_id', Auth::id());
             }])->whereHas('user', function ($q) {
                 $q->where('is_banned', false)->where('is_banned_by_moderator', false);
@@ -53,7 +54,7 @@ class PostController extends Controller
 
     public function show(Post $post)
     {
-        $post->load(['comments.user.image:id,path,id', 'likes', 'user.image:id,path,id', 'images:path']);
+        $post->load(['comments.user.image:id,path,id', 'likes', 'user.image:id,path,id', 'images:path', 'video']);
         $comments = $post->comments;
         $likes = $post->likes;
 
@@ -73,7 +74,11 @@ class PostController extends Controller
             'user_id' => $user->id,
         ]);
 
-        if (isset($data['images'])) Image::storeMultiple($post, 'posts', $data['images']);
+        if (isset($data['video'])) {
+            Video::store($data['video'], $user, $post);
+        } else if (isset($data['images'])) {
+            Image::storeMultiple($post, 'posts', $data['images']);
+        }
         return response()->json(['message' => 'Post created successfully']);
     }
 
@@ -82,7 +87,7 @@ class PostController extends Controller
         $post = Post::find($id);
         if (!$post) return response()->json(['message' => 'Post not found'], 404);
         $this->authorize('update', $post);
-        return response()->json(['post' => $post->load('images:path,imageable_id')]);
+        return response()->json(['post' => $post->load(['images', 'video'])]);
     }
 
 
@@ -91,9 +96,26 @@ class PostController extends Controller
         $this->authorize('update', $post);
         $data = $request->validated();
         $post->update($data);
-        if (isset($data['images'])) Image::storeMultiple($post, 'posts', $data['images']);
 
-        return response()->json(['message' => 'Post updated successfully']);
+        if (isset($data['images'])) {
+            Image::storeMultiple($post, 'posts', $data['images']);
+            Video::deleteAll($post);
+            
+        } else if (isset($data['video'])) {
+            // IF A VIDEO IS UPLOADED, DELETE ALL IMAGES ASSOCIATED WITH THE POST
+            Video::store($data['video'], Auth::user(), $post);
+            Image::deleteMultiple($post);
+        }
+
+        // deletedImages IS AN ARRAY OF IMAGE IDS TO DELETE
+        if (isset($data['deletedImages']) && count($data['deletedImages']) > 0) {
+            collect($data['deletedImages'])->map(function ($imageId) {
+                Image::deleteById($imageId);
+            });
+        }
+
+        $post->update($data);
+        return response()->json(['message' => 'Post updated successfully', "xx" => ["images" => isset($data['images']), "video" => isset($data['video']), "deletedImages" => isset($data['deletedImages'])]]);
     }
 
     public function destroy(Post $post)
